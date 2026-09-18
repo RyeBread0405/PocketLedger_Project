@@ -19,7 +19,7 @@ public class CSVReader{
         List<Transaction> transactions = new ArrayList<>();
 
         //Iterate through the list from the file
-        for (int i = 1; i < line.size(); ++i){
+        for (int i = 1; i < lines.size(); i++){
             //Define the line
             String line = lines.get(i);
 
