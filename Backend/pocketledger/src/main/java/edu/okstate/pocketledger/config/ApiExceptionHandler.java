@@ -10,9 +10,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Map;
 
+
+// converts failed requests into error format from contract
+// applies these handlers to all endpoints (every controller)
 @RestControllerAdvice 
 public class ApiExceptionHandler {
     
+    // thrown when JSON can't be turned into the record at all
+    // this happens before validation runs, needs own handler
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, Object> handleValidationError(MethodArgumentNotValidException exception) {
@@ -29,6 +34,8 @@ public class ApiExceptionHandler {
         return error("INVALID_REQUEST", "The request could not be read. Check the field names and values.");
     }
 
+    // shared by both handlers so shape stays same
+    // a Map becomes a JSON object, and the nested Map produces the error wrapper in contract
     private Map<String, Object> error(String code, String message) {
         return Map.of("error", Map.of("code", code, "message", message));
     }
