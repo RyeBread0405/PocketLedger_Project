@@ -25,7 +25,7 @@ public class ApiExceptionHandler {
         String message = firstError == null
             ? "The request is not valid."
             : firstError.getField() + " " + firstError.getDefaultMessage();
-        return error("VALIDATION_ERROR", message);
+        return error("VALIDATION_ERROR", message);  // error format from contract (code: , message: )
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)

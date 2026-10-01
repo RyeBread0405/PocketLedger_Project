@@ -1,0 +1,40 @@
+Backend
+
+This is a Java program that stores the data for PocketLedger and answers
+requests from the website. It runs separately from the frontend and talks to a 
+MySQL database hosted on Aiven.
+
+To run:
+    cd Backend/PocketLedger
+    ./mvnw spring-boot:run
+
+Files
+
+PocketledgerApplication.java – starts the program
+
+HealthController.java – answers the URL '/api/health' with 'OK'
+
+account/
+
+    AccountType.java – the four kinds of account: checking, savings, credit, cash
+    CreateAccountRequest.java – what the website sends when making an account,
+        and the rules it has to follow
+    AccountResponse.java – what gets sent back, including currency
+    AccountController.java – the '/api/accounts' request
+
+config/
+
+    CorsConfig.java – lets the website call the backend (ports 3000, 8000 respectively)
+    ApiExceptionHandler.java – turns errors into specified format
+
+user/ 
+
+    User.java – describes the 'user' table os Java can read and write it
+    UserRepository.java – saves users and looks them up via email
+    Transaction.java, CSVReader.java – [Rylee]
+
+Settings
+
+    application.properties
+    .env holds database password
+    
