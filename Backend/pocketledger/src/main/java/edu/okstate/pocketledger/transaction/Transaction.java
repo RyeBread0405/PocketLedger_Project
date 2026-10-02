@@ -1,13 +1,13 @@
 package edu.okstate.pocketledger.transaction;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
-import java.time.LocalData;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 // map row in transaction table to java object
 // doesn't create table, just matches it (validate)
@@ -18,11 +18,11 @@ public class Transaction{
     //Primary key assigned by mysql
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "transaction_id")s
+    @Column(name = "transaction_id")
     private Long id;
 
-    //Transaction amount (delta on the table)
-    @Column(name = "delta", nullable = false. precision = 14, scale = 2)
+    // Transaction amount (delta on the table)
+    @Column(name = "delta", nullable = false, precision = 14, scale = 2)
     private BigDecimal amount;
 
     //Transaction label | Max length 255
