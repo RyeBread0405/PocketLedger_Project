@@ -1,6 +1,7 @@
 import type { User, MeResponse } from "../types/api";
 export const mockUser: User = {//Mock logged-in student
   id: 1,
+  name: "Alex",
   email: "student@okstate.edu",
   homeCurrency: "USD",
 };

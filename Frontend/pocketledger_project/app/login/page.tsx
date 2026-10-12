@@ -1,7 +1,11 @@
 "use client";
+import {useState} from "react";
+import Link from "next/link";
 import { Wallet, Globe, Sparkles, PieChart } from "lucide-react";
+import {mockLogin} from "../../mocks";
+import {saveToken} from "../../lib/auth";
 const BACKEND_URL = "http://localhost:8080";
-const USE_MOCK = true; //Use mock login for now, change to false when OAuth is ready
+const USE_MOCK = true; //Use mock login for now, change to false when the backend login is ready.
 const features = [
   { icon: Globe, text: "Track spending in any currency" },
   { icon: Sparkles, text: "AI sorts your transactions for you" },
@@ -11,12 +15,34 @@ const grainTexture =
   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")"; 
  
 export default function LoginPage() { 
-  function handleLogin() { 
-    if (USE_MOCK) { //Go straight to the home page while using mock data
-      window.location.href = "/"; 
-      return; 
+  const [email, setEmail]= useState("");
+  const [password, setPassword]= useState("");
+  const [error, setError]= useState("");
+  async function handleLogin(e: React.SubmitEvent<HTMLFormElement>) { 
+    e.preventDefault(); //Stop the form from reloading the page
+    setError("");
+    if (USE_MOCK) { //Test with student@okstate.edu and password123
+      try{
+        const data= await mockLogin({email,password});
+        saveToken(data.token);
+        window.location.href="/";
+      }catch {
+        setError("Email or password is incorrect.");
+      }
+      return;
     } 
-    window.location.href = `${BACKEND_URL}/oauth2/authorization/google`; //Use Google OAuth when the backend login is ready
+    const res= await fetch (`${BACKEND_URL}/api/auth/login`,{
+      method:"POST",
+      headers: {"Content-type": "application/json"},
+      body: JSON.stringify({email, password}),
+    });
+    if (!res.ok){
+      setError ("Email or password is incorrect.");
+      return;
+    }
+    const data=await res.json();
+    saveToken(data.token); //Save the token so other pages can use it
+    window.location.href="/";
   } 
   return ( 
     <main className="relative flex min-h-screen flex-col overflow-hidden bg-linear-to-b from-[#E4EFE3] via-[#E3EDF1] via-40% to-[#FBF8EF] to-75% md:flex-row md:bg-linear-to-r"> 
@@ -77,22 +103,48 @@ export default function LoginPage() {
         <div className="w-full max-w-sm rounded-2xl border border-[#EDE6D3] bg-[#FFFDF7] p-8 shadow-sm"> 
           <h2 className="text-2xl font-semibold text-[#3F4A45]">Sign in</h2> 
           <p className="mt-2 text-sm text-[#7A8580]"> 
-            Use your Google account to continue. 
+            Log in with your email and password.
           </p> 
-          {/* Google login button */}
-          <button 
-            onClick={handleLogin} 
-            className="mt-8 w-full rounded-lg border border-[#CFE0CF] bg-[#EEF5EC] px-4 py-3 font-medium text-[#3F5747] transition hover:-translate-y-0.5 hover:bg-[#E4EFE3] hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A9C9B0]" 
-          > 
-            Continue with Google 
-          </button> 
-          <p className="mt-6 text-center text-xs leading-relaxed text-[#9AA39E]"> 
-            No separate sign-up needed. 
-            <br /> 
-            First time here? Just continue with Google. 
-          </p> 
-        </div> 
-      </section> 
+          {/* Email and password login form */}
+          <form onSubmit={handleLogin} className="mt-8 space-y-4">
+            <div>
+              <label htmlFor="email" className="text-sm text-[#4F6657]">Email</label>
+              <input
+                id="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e)=>setEmail(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-[#CFE0CF] bg-white px-3 py-2 text-[#3F4A45] focus:outline-none focus:ring-2 focus:ring-[#A9C9B0]"
+                />
+            </div>
+            <div>
+              <label htmlFor="password" className="text-sm text-[#4F6657]">Password</label>
+              <input
+                id="password"
+                type="password"
+                required
+                value={password}
+                onChange={(e)=>setPassword(e.target.value)}
+                className="mt-1 w-full rounded-lg border border-[#CFE0CF] bg-white px-3 py-2 text-[#3F4A45] focus:outline-none focus:ring-2 focus:ring-[#A9C9B0]"
+                />
+            </div>
+            {/* Only show when login fails */}
+            {error && <p className="text-sm text-[#B5574B]">{error}</p>}
+            <button
+              type="submit"
+              className="w-full rounded-lg border border-[#CFE0CF] bg-[#EEF5EC] px-4 py-3 font-medium text-[#3F5747] transition hover:-translate-y-0.5 hover:bg-[#E4EFE3] hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A9C9B0]">
+                Sign in
+              </button>
+          </form>
+          <p className="mt-6 text-center text-sm text-[#7A8580]">
+            Don&apos;t have an account?{" "}
+            <Link href="/register" className="font-medium text-[#5E8A6B] hover:underline">
+            Sign up
+            </Link>
+          </p>
+        </div>
+      </section>
       {/* Adds a light grain texture over the full page */}
       <div 
         className="pointer-events-none absolute inset-0 opacity-[0.15] mix-blend-multiply" 
