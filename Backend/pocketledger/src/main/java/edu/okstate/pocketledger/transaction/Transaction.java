@@ -43,7 +43,7 @@ public class Transaction{
 
     //Category
     @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
+    @JoinColumn(name = "category", nullable = false)
     private Category category;
 
     //Add account later. I'm lazy and a little confused
