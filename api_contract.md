@@ -17,11 +17,11 @@ This document defines the API between our Next.js frontend and Spring Boot backe
 
 **Currency:** Currencies use three-letter uppercase codes, for example: `USD`, `EUR`, `CNY`.
 
-**Authentication:** Protected endpoints will use a login cookie set by the backend:
+**Authentication:** Protected endpoints require a JSON Web Token (JWT). The backend returns the token in the JSON response after register or login. The frontend saves it in `localStorage` and sends it with every protected request:
 ```text
-Cookie: token=<token>
+Authorization: Bearer <token>
 ```
-The backend identifies the user from the token. The frontend does not send a `userId` with normal requests. The frontend sends requests with `credentials: "include"` so the browser includes the cookie.
+The backend identifies the user from the token. The frontend does not send a `userId` with normal requests. If the token is invalid or expired, the backend returns `401` and the frontend sends the user back to the login page.
 
 **Errors:** Errors use this format:
 ```json
@@ -32,23 +32,56 @@ The backend identifies the user from the token. The frontend does not send a `us
   }
 }
 ```
-Common HTTP status codes: `400` - Invalid request, `401` - Not logged in or invalid token, `404` - Resource not found, `409` - Conflict such as deleting the `Other` category, `500` - Server error.
+Common HTTP status codes: `400` - Invalid request, `401` - Not logged in or invalid token, `404` - Resource not found, `409` - Conflict such as an email that is already registered or deleting the `Other` category, `500` - Server error.
 
 **Authentication endpoints**
 
-We use OAuth for login. The backend stores the JSON Web Token (JWT) in an HttpOnly cookie.
+Users create an account with an email and password. The backend hashes passwords with BCrypt before storing them. Register and login do not need a token. All other endpoints in this section do.
 
-**Login:** `GET /oauth2/authorization/{provider}`
+**Register:** `POST /api/auth/register`
+Request:
+```json
+{
+  "name": "Alex",
+  "email": "student@okstate.edu",
+  "password": "password123"
+}
+```
 
-Example: `GET /oauth2/authorization/google`
+The password must be 8 to 72 characters. `homeCurrency` is not sent. New users start with `USD`.
 
-This login works through a browser redirect, so there is no JSON request body. Spring Security uses this path by default, so it is not under `/api`. After login, the backend creates a new user if needed, sets the login cookie, and sends the user back to the frontend.
+Response: `201 Created`
+```json
+{
+  "token": "<jwt>",
+  "user": {
+    "id": 1,
+    "name": "Alex",
+    "email": "student@okstate.edu",
+    "homeCurrency": "USD"
+  }
+}
+```
 
-**Logout:** `POST /api/auth/logout`
+The user is logged in right after registering, so the response includes a token.
 
-Response: `204 No Content`
+Errors: `400` `VALIDATION_ERROR` if a field is missing or the password is the wrong length. `409` `EMAIL_TAKEN` if the email is already registered.
 
-The backend clears the login cookie.
+**Login:** `POST /api/auth/login`
+
+Request:
+```json
+{
+  "email": "student@okstate.edu",
+  "password": "password123"
+}
+```
+
+Response: `200 OK` with the same format as register.
+
+Errors: `401` `INVALID_CREDENTIALS` if the email or password is wrong. The message does not say which one was wrong.
+
+**Logout:** There is no logout endpoint. The frontend deletes the token from `localStorage` and sends the user to the login page.
 
 **Get Current User:** `GET /api/auth/me`
 
@@ -57,13 +90,14 @@ Response: `200 OK`
 {
   "user": {
     "id": 1,
+    "name": "Alex",
     "email": "student@okstate.edu",
     "homeCurrency": "USD"
   }
 }
 ```
 
-The frontend can use this endpoint to check whether the current login is still valid. `homeCurrency` is `USD` by default for a new user.
+The frontend can use this endpoint to check whether the saved token is still valid. `homeCurrency` is `USD` by default for a new user.
 
 **Update Home Currency:** `PATCH /api/auth/me`
 
@@ -80,7 +114,7 @@ Response: `200 OK` and the updated user. The settings page uses this endpoint wh
 
 Response: `204 No Content`
 
-The user and all of their data are permanently deleted.
+The user and all of their data are permanently deleted. The frontend then deletes the token.
 
 **Transaction**
 
@@ -419,7 +453,7 @@ Response: `200 OK`
 Currency conversion is handled by the backend. The backend uses the exchange rate from the transaction date instead of the current exchange rate.
 
 **Assumptions**
-1. We use OAuth for login. This contract assumes the backend stores the JWT in an HttpOnly cookie. We may change this later. If we use `localStorage` instead, the frontend will send `Authorization: Bearer <token>`, and the backend will need to return the token after login.
+1. We use email and password login. The backend returns a JWT in the response body, and the frontend stores it in `localStorage` and sends it as `Authorization: Bearer <token>`. We still need to decide how long a token stays valid. The `user` table does not have a `name` column yet, so the backend needs to add it.
 2. New users start with `USD` as their `homeCurrency`. They can change it in settings using `PATCH /api/auth/me`. If it changes, the backend recalculates `convertedAmount` for existing transactions so the app uses the new home currency.
 3. `categorySource` `default` means the category did not come from the user, a saved rule, or AI. This can happen when a manual transaction has no category, when rules and AI both fail during CSV import or `POST /api/ai/categorize`, or when a category is deleted. In these cases, the transaction goes to `Other`. We still need to decide what AI confidence score is too low.
 4. Rules and AI are only used for CSV imports and `POST /api/ai/categorize`. Manual transactions use the category selected by the user. We have not decided yet how new rules will be created.
