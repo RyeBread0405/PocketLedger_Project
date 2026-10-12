@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import edu.okstate.pocketledger.category.Category;
+import edu.okstate.pocketledger.account.Account;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -46,7 +47,10 @@ public class Transaction{
     @JoinColumn(name = "category", nullable = false)
     private Category category;
 
-    //Add account later. I'm lazy and a little confused
+    //Account
+    @ManyToOne
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
 
 
     //Empty constructor for JPA
@@ -54,12 +58,13 @@ public class Transaction{
     }
 
     //Constructor with parameters
-    public Transaction(BigDecimal amount, String label, String description, LocalDate date, Category category){
+    public Transaction(BigDecimal amount, String label, String description, LocalDate date, Category category, Account account){
         this.amount = amount;
         this.label = label;
         this.description = description;
         this.date = date;
         this.category = category;
+        this.account = account;
     }
 
     public Long getId(){
@@ -84,5 +89,9 @@ public class Transaction{
 
     public Category getCategory(){
         return category;
+    }
+
+    public Account getAccount(){
+        return account;
     }
 }
