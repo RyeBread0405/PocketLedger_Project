@@ -45,6 +45,6 @@ public class ApiExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, Object> handleConflict(IllegalArgumentException exception) {
-        return error("CONFLICT", exception.getMessage());
+        return error("EMAIL TAKEN", exception.getMessage());
     }
 }
