@@ -9,7 +9,10 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-
+/*
+ * SecurityConfig.java
+ * Facilitates password hashing and secure (authorized only) communication
+ */
 
 @Configuration
 public class SecurityConfig{
