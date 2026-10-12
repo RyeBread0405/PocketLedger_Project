@@ -6,8 +6,22 @@ export type AccountType =
   | "cash";
 export interface User {//Basic user information returned after login
   id: number;
+  name: string;
   email: string;
   homeCurrency: string;
+}
+export interface LoginRequest {//Data sent when the user logs in
+  email: string;
+  password: string;
+} 
+export interface RegisterRequest {//Data sent when the user creates an account (currency defaults to USD)
+  name: string;
+  email: string;
+  password: string;
+}
+export interface AuthResponse {//Returned after login or register
+  token: string;
+  user: User;
 }
 export interface MeResponse {//Response used when getting or updating the current user
   user: User;

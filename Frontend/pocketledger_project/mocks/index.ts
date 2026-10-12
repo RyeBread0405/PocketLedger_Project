@@ -6,3 +6,4 @@ export * from "./exchangeRate";
 export * from "./import";
 export * from "./transactions";
 export * from "./user";
+export * from "./auth";
