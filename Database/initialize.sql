@@ -17,12 +17,11 @@ use TBD_DB;
 
 CREATE TABLE user( 
 	/*
-		Defines the user account, not to be conflated with Account (see below). One user may have many
-        Accounts.
+		Defines the user account, not to be conflated with Account (see below).
     */
 	user_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
 	email_address VARCHAR(255) NOT NULL,
-    credential VARCHAR(255) NOT NULL -- Revisit this; what exactly is OAuth going to send?
+    credential VARCHAR(255) NOT NULL
 );
   
 CREATE TABLE account (
