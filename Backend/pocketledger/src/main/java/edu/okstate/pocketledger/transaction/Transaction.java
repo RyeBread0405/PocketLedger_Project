@@ -13,8 +13,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-// map row in transaction table to java object
-// doesn't create table, just matches it (validate)
+/*
+ * Transaction.java
+ * Maps rows in the table Transaction to a Java object.
+ * Validates, does not create.
+ */
+
+// validation
 @Entity
 @Table(name = "transaction")
 public class Transaction{
@@ -62,6 +67,7 @@ public class Transaction{
         this.category = category;
     }
 
+    // accessor methods
     public Long getId(){
         return id;
     }
