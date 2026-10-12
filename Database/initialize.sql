@@ -43,8 +43,9 @@ CREATE TABLE category (
 	category_label VARCHAR(255) NOT NULL,
     category_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT
 );
-INSERT INTO category(category_label) 
-VALUES ('food'), ('transport');
+INSERT INTO category(category_label)
+VALUES ('Rent'), ('Utilities'), ('Bills'), ('Groceries'), ('Dining'), ('Entertainment'), ('Transportation'), ('Health and Wellness'), ('Shopping'), 
+		('Education'), ('Income'), ('Other');
 
 CREATE TABLE transaction(
 	account_id BIGINT UNSIGNED NOT NULL,
