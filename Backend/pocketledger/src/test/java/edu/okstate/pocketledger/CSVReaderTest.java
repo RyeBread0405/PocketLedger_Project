@@ -3,8 +3,12 @@ package edu.okstate.pocketledger;
 import java.io.IOException;
 import java.util.List;
 
+import org.junit.jupiter.api.Test;
+
 public class CSVReaderTest{
-    public static void main(String[] args) throws IOException{
+
+    @Test
+    public void testReadCSV() throws IOException{
         CSVReader reader = new CSVReader();
 
         String filePath = "C:\\Users\\rylee\\OneDrive\\Documents\\transaction.csv";
