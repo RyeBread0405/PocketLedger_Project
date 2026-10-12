@@ -1,13 +1,17 @@
 package edu.okstate.pocketledger.transaction;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+import edu.okstate.pocketledger.category.Category;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.math.BigDecimal;
-import java.time.LocalDate;
 
 // map row in transaction table to java object
 // doesn't create table, just matches it (validate)
@@ -21,7 +25,7 @@ public class Transaction{
     @Column(name = "transaction_id")
     private Long id;
 
-    // Transaction amount (delta on the table)
+    //Transaction amount (delta on the table)
     @Column(name = "delta", nullable = false, precision = 14, scale = 2)
     private BigDecimal amount;
 
@@ -37,6 +41,48 @@ public class Transaction{
     @Column(name = "transaction_date", nullable = false) //Required
     private LocalDate date;
 
-    //Add category and account later. I'm lazy
+    //Category
+    @ManyToOne
+    @JoinColumn(name = "category", nullable = false)
+    private Category category;
 
+    //Add account later. I'm lazy and a little confused
+
+
+    //Empty constructor for JPA
+    protected Transaction(){
+    }
+
+    //Constructor with parameters
+    public Transaction(BigDecimal amount, String label, String description, LocalDate date, Category category){
+        this.amount = amount;
+        this.label = label;
+        this.description = description;
+        this.date = date;
+        this.category = category;
+    }
+
+    public Long getId(){
+        return id;
+    }
+
+    public BigDecimal getAmount(){
+        return amount;
+    }
+
+    public String getLabel(){
+        return label;
+    }
+
+    public String getDescription(){
+        return description;
+    }
+
+    public LocalDate getDate(){
+        return date;
+    }
+
+    public Category getCategory(){
+        return category;
+    }
 }
