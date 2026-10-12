@@ -39,4 +39,12 @@ public class ApiExceptionHandler {
     private Map<String, Object> error(String code, String message) {
         return Map.of("error", Map.of("code", code, "message", message));
     }
+
+
+    // user service will throw this when an email is taken
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, Object> handleConflict(IllegalArgumentException exception) {
+        return error("CONFLICT", exception.getMessage());
+    }
 }
