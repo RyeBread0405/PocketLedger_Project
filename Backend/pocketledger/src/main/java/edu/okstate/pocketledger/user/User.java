@@ -44,7 +44,7 @@ public class User {
 
     }
 
-    //used when registering a new user
+    // used when registering a new user
     public User(String email, String passwordHash) {
         this.email = email;
         this.passwordHash = passwordHash;
