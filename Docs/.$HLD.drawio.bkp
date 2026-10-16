@@ -1,0 +1,43 @@
+<mxfile host="Electron">
+  <diagram name="Page-1" id="O99F8s4_fMYYYZyxy4wK">
+    <mxGraphModel dx="682" dy="597" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="5OVGUHUsxaBD2fvdoeUM-6" edge="1" parent="1" source="5OVGUHUsxaBD2fvdoeUM-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="5OVGUHUsxaBD2fvdoeUM-4" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="5OVGUHUsxaBD2fvdoeUM-9" edge="1" parent="1" source="5OVGUHUsxaBD2fvdoeUM-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="5OVGUHUsxaBD2fvdoeUM-7" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="5OVGUHUsxaBD2fvdoeUM-10" edge="1" parent="1" source="5OVGUHUsxaBD2fvdoeUM-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="5OVGUHUsxaBD2fvdoeUM-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="5OVGUHUsxaBD2fvdoeUM-3" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="User" vertex="1">
+          <mxGeometry height="60" width="30" x="20" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="5OVGUHUsxaBD2fvdoeUM-5" edge="1" parent="1" source="5OVGUHUsxaBD2fvdoeUM-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;startArrow=none;startFill=0;endArrow=none;endFill=0;" target="5OVGUHUsxaBD2fvdoeUM-3" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="5OVGUHUsxaBD2fvdoeUM-4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Login" vertex="1">
+          <mxGeometry height="60" width="120" x="120" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="5OVGUHUsxaBD2fvdoeUM-7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Manage Transactions" vertex="1">
+          <mxGeometry height="60" width="120" x="120" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="5OVGUHUsxaBD2fvdoeUM-8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Manage budgets" vertex="1">
+          <mxGeometry height="60" width="120" x="120" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="C_Eh0qGVDnEg_jh-MQm1-1" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="Backend" vertex="1">
+          <mxGeometry height="60" width="30" x="510" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="C_Eh0qGVDnEg_jh-MQm1-4" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="Frontend" vertex="1">
+          <mxGeometry height="60" width="30" x="380" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="C_Eh0qGVDnEg_jh-MQm1-5" parent="1" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="Database&lt;div&gt;&lt;br&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="30" x="490" y="200" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
