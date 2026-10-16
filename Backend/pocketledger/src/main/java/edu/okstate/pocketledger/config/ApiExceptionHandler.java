@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import edu.okstate.pocketledger.user.InvalidCredentialsException;
+
 import java.util.Map;
 
 
@@ -46,5 +48,13 @@ public class ApiExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, Object> handleConflict(IllegalArgumentException exception) {
         return error("EMAIL TAKEN", exception.getMessage());
+    }
+
+
+    // login will throw this when email isn't found OR password is wrong
+    @ExceptionHandler (InvalidCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Map<String, Object> handleInvalidCredentials(InvalidCredentialsException exception) {
+        return error("INVALID_CREDENTIALS", exception.getMessage());
     }
 }
