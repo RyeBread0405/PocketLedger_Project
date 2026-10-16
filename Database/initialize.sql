@@ -20,7 +20,7 @@ CREATE TABLE user(
 		Defines the user account, not to be conflated with Account (see below).
     */
 	user_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-	email_address VARCHAR(255) NOT NULL,
+	email_address VARCHAR(255) NOT NULL UNIQUE,
     credential VARCHAR(255) NOT NULL
 );
   
