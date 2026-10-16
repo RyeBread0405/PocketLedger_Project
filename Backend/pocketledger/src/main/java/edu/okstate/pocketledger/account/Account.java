@@ -38,9 +38,9 @@ public class Account{
     @Column(name = "account_type", nullable = false)
     private AccountType type;
 
-    //Currency of account
-    @Column(name = "currency", nullable = false, length = 3)
-    private String currency;
+    // //Currency of account
+    // @Column(name = "currency", nullable = false, length = 3)
+    // private String currency;
 
     //Empty constructor
     protected Account(){
@@ -52,7 +52,7 @@ public class Account{
         this.user = user;
         this.name = name;
         this.type = type;
-        this.currency = currency;
+        // this.currency = currency;
     }
 
     public User getUser(){
@@ -71,7 +71,7 @@ public class Account{
         return type;
     }
 
-    public String getCurrency(){
-        return currency;
-    }
+    // public String getCurrency(){
+    //     return currency;
+    // }
 }
