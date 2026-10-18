@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 public class AuthController {
     
-    private final UserService userService;
+    private final UserServiceTest userService;
     private final TokenService tokenService;
 
     // spring provides the service
-    public AuthController(UserService userService, TokenService tokenService) {
+    public AuthController(UserServiceTest userService, TokenService tokenService) {
         this.userService = userService;
         this.tokenService = tokenService;
     }
