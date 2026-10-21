@@ -1,16 +1,16 @@
 package edu.okstate.pocketledger.account;
 
+import edu.okstate.pocketledger.user.User;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import edu.okstate.pocketledger.user.User;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.EnumType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 //Map row in the table to java object
 @Entity
@@ -38,21 +38,16 @@ public class Account{
     @Column(name = "account_type", nullable = false)
     private AccountType type;
 
-    // //Currency of account
-    // @Column(name = "currency", nullable = false, length = 3)
-    // private String currency;
-
     //Empty constructor
     protected Account(){
 
     }
 
     //Constructor
-    public Account(User user, String name, AccountType type, String currency){
+    public Account(User user, String name, AccountType type){
         this.user = user;
         this.name = name;
         this.type = type;
-        // this.currency = currency;
     }
 
     public User getUser(){
@@ -70,8 +65,4 @@ public class Account{
     public AccountType getType(){
         return type;
     }
-
-    // public String getCurrency(){
-    //     return currency;
-    // }
 }
