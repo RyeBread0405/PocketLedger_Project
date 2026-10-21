@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import edu.okstate.pocketledger.user.InvalidCredentialsException;
+
 import java.util.Map;
 
 /*
@@ -42,5 +44,21 @@ public class ApiExceptionHandler {
     // a Map becomes a JSON object, and the nested Map produces the error wrapper in contract
     private Map<String, Object> error(String code, String message) {
         return Map.of("error", Map.of("code", code, "message", message));
+    }
+
+
+    // user service will throw this when an email is taken
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, Object> handleConflict(IllegalArgumentException exception) {
+        return error("EMAIL TAKEN", exception.getMessage());
+    }
+
+
+    // login will throw this when email isn't found OR password is wrong
+    @ExceptionHandler (InvalidCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Map<String, Object> handleInvalidCredentials(InvalidCredentialsException exception) {
+        return error("INVALID_CREDENTIALS", exception.getMessage());
     }
 }

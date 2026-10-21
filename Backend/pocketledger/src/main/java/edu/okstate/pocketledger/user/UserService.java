@@ -35,4 +35,15 @@ public class UserService{
         //Save the user to the database and return it
         return userRepository.save(user);
     }
+
+    // find user, check password, hand them back
+    public User login(LoginRequest request) {
+        User user = userRepository.findByEmail(request.email()).orElseThrow(InvalidCredentialsException::new);
+
+        if (!encoder.matches(request.password(), user.getPasswordHash())) {     // BCrypt hashes attempt then compares
+            throw new InvalidCredentialsException();
+        }
+
+        return user;
+    }
 }
