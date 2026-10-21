@@ -16,18 +16,30 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
     
     private final UserService userService;
+    private final TokenService tokenService;
 
     // spring provides the service
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, TokenService tokenService) {
         this.userService = userService;
+        this.tokenService = tokenService;
     }
 
     // POST /api/auth/register (returns 201)
+    // returns token too so user is logged in right after registering
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponse register(@Valid @RequestBody CreateUserRequest request) {
+    public AuthResponse register(@Valid @RequestBody CreateUserRequest request) {
         User saved = userService.createUser(request);
-        return new UserResponse(saved.getId(), saved.getEmail());
+        return new AuthResponse(tokenService.createToken(saved), new UserResponse(saved.getId(), saved.getEmail()));
+    }
+
+
+    // POST /api/auth/login (returns 200)
+    // checks password then hands back same stuff as register
+    @PostMapping("/login")
+    public AuthResponse login(@Valid @RequestBody LoginRequest request) {
+        User user = userService.login(request);
+        return new AuthResponse(tokenService.createToken(user), new UserResponse(user.getId(), user.getEmail()));
     }
 
 }
