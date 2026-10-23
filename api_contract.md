@@ -42,7 +42,6 @@ Users create an account with an email and password. The backend hashes passwords
 Request:
 ```json
 {
-  "name": "Alex",
   "email": "student@okstate.edu",
   "password": "password123"
 }
@@ -56,13 +55,12 @@ Response: `201 Created`
   "token": "<jwt>",
   "user": {
     "id": 1,
-    "name": "Alex",
     "email": "student@okstate.edu",
-    "homeCurrency": "USD"
+    "settings": {"homeCurrency": "USD"} 
   }
 }
 ```
-
+The settings object is not returned yet. It will be added once the settings column is in the user table.
 The user is logged in right after registering, so the response includes a token.
 
 Errors: `400` `VALIDATION_ERROR` if a field is missing or the password is the wrong length. `409` `EMAIL_TAKEN` if the email is already registered.
@@ -90,21 +88,22 @@ Response: `200 OK`
 {
   "user": {
     "id": 1,
-    "name": "Alex",
     "email": "student@okstate.edu",
-    "homeCurrency": "USD"
+    "settings": {"homeCurrency": "USD"} 
   }
 }
 ```
 
-The frontend can use this endpoint to check whether the saved token is still valid. `homeCurrency` is `USD` by default for a new user.
+The frontend can use this endpoint to check whether the saved token is still valid. User settings are stored as JSON in the database. `settings.homeCurrency` is `USD` by default for a new user.
 
 **Update Home Currency:** `PATCH /api/auth/me`
 
 Request:
 ```json
 {
-  "homeCurrency": "EUR"
+  "settings":{
+    "homeCurrency": "EUR"
+  }
 }
 ```
 
@@ -453,8 +452,8 @@ Response: `200 OK`
 Currency conversion is handled by the backend. The backend uses the exchange rate from the transaction date instead of the current exchange rate.
 
 **Assumptions**
-1. We use email and password login. The backend returns a JWT in the response body, and the frontend stores it in `localStorage` and sends it as `Authorization: Bearer <token>`. We still need to decide how long a token stays valid. The `user` table does not have a `name` column yet, so the backend needs to add it.
-2. New users start with `USD` as their `homeCurrency`. They can change it in settings using `PATCH /api/auth/me`. If it changes, the backend recalculates `convertedAmount` for existing transactions so the app uses the new home currency.
+1. We use email and password login. The backend returns a JWT in the response body, and the frontend stores it in `localStorage` and sends it as `Authorization: Bearer <token>`. Tokens expire after 24 hours, and the backend signs them with `JWT_SECRET` from `.env`.
+2. New users start with `USD` as their `settings.homeCurrency`. They can change it in settings using `PATCH /api/auth/me`. If it changes, the backend recalculates `convertedAmount` for existing transactions so the app uses the new home currency.
 3. `categorySource` `default` means the category did not come from the user, a saved rule, or AI. This can happen when a manual transaction has no category, when rules and AI both fail during CSV import or `POST /api/ai/categorize`, or when a category is deleted. In these cases, the transaction goes to `Other`. We still need to decide what AI confidence score is too low.
 4. Rules and AI are only used for CSV imports and `POST /api/ai/categorize`. Manual transactions use the category selected by the user. We have not decided yet how new rules will be created.
 5. `Other` is one of the default categories and cannot be deleted. The frontend should not show a delete button for it. We have not decided the full default category list yet.

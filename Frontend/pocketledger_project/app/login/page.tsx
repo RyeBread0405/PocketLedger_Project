@@ -5,7 +5,7 @@ import { Wallet, Globe, Sparkles, PieChart } from "lucide-react";
 import {mockLogin} from "../../mocks";
 import {saveToken} from "../../lib/auth";
 const BACKEND_URL = "http://localhost:8080";
-const USE_MOCK = true; //Use mock login for now, change to false when the backend login is ready.
+const USE_MOCK = false; //Login uses the real backend now. 
 const features = [
   { icon: Globe, text: "Track spending in any currency" },
   { icon: Sparkles, text: "AI sorts your transactions for you" },
@@ -30,19 +30,23 @@ export default function LoginPage() {
         setError("Email or password is incorrect.");
       }
       return;
-    } 
-    const res= await fetch (`${BACKEND_URL}/api/auth/login`,{
-      method:"POST",
-      headers: {"Content-type": "application/json"},
-      body: JSON.stringify({email, password}),
-    });
-    if (!res.ok){
-      setError ("Email or password is incorrect.");
-      return;
     }
-    const data=await res.json();
-    saveToken(data.token); //Save the token so other pages can use it
-    window.location.href="/";
+    try{ 
+      const res= await fetch (`${BACKEND_URL}/api/auth/login`,{
+        method:"POST",
+        headers: {"Content-type": "application/json"},
+        body: JSON.stringify({email, password}),
+      });
+      if (!res.ok){
+        setError ("Email or password is incorrect.");
+        return;
+      }
+      const data=await res.json();
+      saveToken(data.token); //Save the token so other pages can use it
+      window.location.href="/";
+    } catch {
+      setError("Could not reach the server.");
+    }
   } 
   return ( 
     <main className="relative flex min-h-screen flex-col overflow-hidden bg-linear-to-b from-[#E4EFE3] via-[#E3EDF1] via-40% to-[#FBF8EF] to-75% md:flex-row md:bg-linear-to-r"> 

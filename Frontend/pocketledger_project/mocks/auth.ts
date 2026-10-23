@@ -23,6 +23,6 @@ export async function mockRegister(req: RegisterRequest): Promise<AuthResponse> 
   }
   return {//New users default to USD
     token: mockAuthResponse.token,
-    user: { id: 2, name: req.name, email: req.email, homeCurrency: "USD" },
+    user: { id: 2, email: req.email, settings: { homeCurrency: "USD" } },
   };
 }
