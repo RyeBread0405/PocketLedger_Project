@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "login": "^0.8.0"
+  },
+  "allowScripts": {
+    "login@0.8.0": true
+  }
+}
