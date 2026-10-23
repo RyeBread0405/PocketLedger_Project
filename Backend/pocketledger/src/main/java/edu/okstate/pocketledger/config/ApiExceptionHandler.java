@@ -12,6 +12,10 @@ import edu.okstate.pocketledger.user.InvalidCredentialsException;
 
 import java.util.Map;
 
+/*
+ * ApiExceptionHandler.java
+ * Used to convert and display readable errors for all endpoints.
+ */
 
 // converts failed requests into error format from contract
 // applies these handlers to all endpoints (every controller)

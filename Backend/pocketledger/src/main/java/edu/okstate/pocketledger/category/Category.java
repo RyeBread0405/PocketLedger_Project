@@ -7,9 +7,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+/*
+ * Category.java
+ * Maps rows in the table Category to a Java object.
+ * Validates, does not create.
+ */
 
-// map row in categpry table to java object
-// doesn't create table, just matches it (validate)
+// validates
 @Entity
 @Table(name = "category")
 public class Category {
@@ -32,6 +36,7 @@ public class Category {
         this.categoryLabel = categoryLabel;
     }
 
+    // accessor methods
     public Integer getId(){
         return id;
     }

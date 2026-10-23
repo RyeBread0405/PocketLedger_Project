@@ -1,15 +1,11 @@
 /* 
-This file is used SOLELY to set-up the data base, the FIRST time it is run. Running it subsequently will 
+This file is used SOLELY to set-up the database, the FIRST time it is run. Running it subsequently will 
 DELETE all existing data in the database. Do NOT run it arbitrarily.
 
 */ 
 
 /*
 To-do list:
-	- Determine what, if any, user settings should be stored on the server (see User table)
-    - Revisit API contract requirements for: account, transaction
-    - Revisit: currency label table vs not storing currency.
-    - Revisit: global vs local categorization
 */
 
 DROP DATABASE IF EXISTS TBD_DB; -- Deletes everything.
@@ -21,15 +17,11 @@ use TBD_DB;
 
 CREATE TABLE user( 
 	/*
-		Defines the user account, not to be conflated with Account (see below). One user may have many
-        Accounts.
+		Defines the user account, not to be conflated with Account (see below).
     */
 	user_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-	email_address VARCHAR(255) NOT NULL,
-    credential VARCHAR(255) NOT NULL -- Revisit this; what exactly is OAuth going to send?
-    -- To-do: Settings go here?
-    -- If so, and no such settings are needed back here, would it be worth
-    -- it to use a JSON?
+	email_address VARCHAR(255) NOT NULL UNIQUE,
+    credential VARCHAR(255) NOT NULL
 );
   
 CREATE TABLE account (
@@ -41,23 +33,23 @@ CREATE TABLE account (
     account_id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     account_name VARCHAR(255) DEFAULT 'unnamed account',
     account_type ENUM('checking', 'savings', 'credit', 'cash') NOT NULL,
-    currency CHAR(3) DEFAULT 'USD' NOT NULL, -- Revisit; also, worth its own table?
+    settings_json BLOB NOT NULL, -- Supports up to 65 KB; can be expanded if needed
     CONSTRAINT FK_account_user_id
     FOREIGN KEY (user_id) REFERENCES user(user_id)
 );
 
 CREATE TABLE category (
--- Used to explicitly store global category names and a corresponding ID. Check about global vs local categories
 	category_label VARCHAR(255) NOT NULL,
     category_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT
 );
-INSERT INTO category(category_label) 
-VALUES ('food'), ('transport');
+INSERT INTO category(category_label)
+VALUES ('Rent'), ('Utilities'), ('Bills'), ('Groceries'), ('Dining'), ('Entertainment'), ('Transportation'), ('Health and Wellness'), ('Shopping'), 
+		('Education'), ('Income'), ('Other');
 
 CREATE TABLE transaction(
 	account_id BIGINT UNSIGNED NOT NULL,
     transaction_id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    delta DECIMAL(14, 2) NOT NULL, -- Adjust if we decide to go pure USD. This pessimistically assumes up to a trillion units.
+    delta DECIMAL(22, 10) NOT NULL, -- This pessimistically assumes up to a trillion USD with extra precision for currency conversion.
     transaction_label VARCHAR(255) DEFAULT 'unlabeled transaction',
     transaction_description VARCHAR(4095) DEFAULT '',
     category INT UNSIGNED NOT NULL,
@@ -83,7 +75,7 @@ CREATE TABLE budget_entry(
 -- Defines the components of a budget
 	budget_id BIGINT UNSIGNED NOT NULL,
     category INT UNSIGNED NOT NULL,
-    alloted DECIMAL(14, 2) NOT NULL, -- Adjust if we decide to go pure USD. This pessimistically assumes up to a trillion units.
+    alloted DECIMAL(22, 10) NOT NULL, -- This pessimistically assumes up to a trillion USD with extra precision for currency conversion.
     PRIMARY KEY(budget_id, category),
     CONSTRAINT FK_budget_entry_budget_id
     FOREIGN KEY (budget_id) REFERENCES budget(budget_id),
@@ -94,7 +86,8 @@ CREATE TABLE budget_entry(
 CREATE table FailedAttempt(
 	username_entry VARCHAR(255),
 	password_entry VARCHAR(255),
-    logtime DATETIME PRIMARY KEY
+    logtime DATETIME,
+    event_id BIGINT AUTO_INCREMENT PRIMARY KEY
 );
 
 SHOW TABLES; -- Shows that tables exist
@@ -108,9 +101,9 @@ VALUES ('bob@hotmail.com', 'bobizcool');
 
 SELECT * FROM user; -- Passes
 
-INSERT INTO account(user_id, account_name, account_type)
-VALUES (1, 'Bob\'s checking', 'checking'),
-		(1, 'Bob\'s savings', 'savings');
+INSERT INTO account(user_id, account_name, account_type, settings_json)
+VALUES (1, 'Bob\'s checking', 'checking', '{}'),
+		(1, 'Bob\'s savings', 'savings', '{}');
 
 SELECT * FROM account; -- Passes
 
