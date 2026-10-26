@@ -17,13 +17,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 class UserServiceTest {
 
     private UserRepository userRepository;
+    private FailedAttemptRepository failedAttempts;
     private UserService userService;
     private final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @BeforeEach
     void setup() {
         userRepository = Mockito.mock(UserRepository.class); // test double
-        userService = new UserService(userRepository, encoder);
+        failedAttempts = Mockito.mock(FailedAttemptRepository.class);
+        userService = new UserService(userRepository, encoder, failedAttempts);
     }
 
     @Test
