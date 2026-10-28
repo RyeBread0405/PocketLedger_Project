@@ -35,7 +35,12 @@ public class AccountController {
          * DEFAULT_CURRENCY:    initializes the default currency as USD.
          */
          // TODO: validate settings
-        return new AccountResponse(request.name(), request.type(), request.settings(), DEFAULT_CURRENCY);
+
+        Integer userId = Integer.valueOf(authentication.getName());
+
+        Account account = accountService.createAccount(request, userId);
+
+        return new AccountResponse(account.getName(), account.getType());
     }
 }
 
