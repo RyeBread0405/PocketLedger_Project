@@ -1,6 +1,7 @@
 package edu.okstate.pocketledger.account;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -17,6 +18,12 @@ import jakarta.validation.Valid;
 @RestController
 public class AccountController {
 
+    private final AccountService accountService;
+
+    public AccountController(AccountService accountService) {
+        this.accountService = accountService;
+    }
+
     // Establishes the default display currency as USD
     // Accounts always initialize with the default currency (ie not sent by frontend)
     // Display currency can be adjusted via settings
@@ -26,16 +33,14 @@ public class AccountController {
     // @Valid runs the rules on CreateAccountRequest
     @PostMapping("/api/accounts")
     @ResponseStatus(HttpStatus.CREATED)
-    public AccountResponse create(@Valid @RequestBody CreateAccountRequest request) {
-        // TODO: save to MySQL and return created account with its id
-        /*
-         * name:                The name of the account itself, a String assigned by the user. Ex: "Bob's checking account"
-         * type:                Enum for the account type (see AccountType.java). Ex: CHECKING
-         * settings:            A json defining all user account settings.
-         * DEFAULT_CURRENCY:    initializes the default currency as USD.
-         */
-         // TODO: validate settings
-        return new AccountResponse(request.name(), request.type(), request.settings(), DEFAULT_CURRENCY);
+    public AccountResponse create(@Valid @RequestBody CreateAccountRequest request, JwtAuthenticationToken authentication) {
+        
+
+        Integer userId = Integer.valueOf(authentication.getName());
+
+        Account account = accountService.createAccount(request, userId);
+
+        return new AccountResponse(account.getName(), account.getType());
     }
 }
 
