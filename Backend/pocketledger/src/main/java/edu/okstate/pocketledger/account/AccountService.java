@@ -1,5 +1,7 @@
 package edu.okstate.pocketledger.account;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import edu.okstate.pocketledger.user.User;
@@ -24,5 +26,9 @@ public class AccountService{
         Account account = new Account(user, request.name(), request.type());
 
         return accountRepository.save(account);
+    }
+
+    public List<Account> getAllAccounts(Integer userId){
+        return accountRepository.findByUser_Id(userId);
     }
 }

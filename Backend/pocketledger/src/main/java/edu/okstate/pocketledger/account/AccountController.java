@@ -1,7 +1,10 @@
 package edu.okstate.pocketledger.account;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -23,11 +26,6 @@ public class AccountController {
     public AccountController(AccountService accountService) {
         this.accountService = accountService;
     }
-
-    // Establishes the default display currency as USD
-    // Accounts always initialize with the default currency (ie not sent by frontend)
-    // Display currency can be adjusted via settings
-    private static final String DEFAULT_CURRENCY = "USD";
     
     // 201 created with new account
     // @Valid runs the rules on CreateAccountRequest
@@ -36,11 +34,27 @@ public class AccountController {
     public AccountResponse create(@Valid @RequestBody CreateAccountRequest request, JwtAuthenticationToken authentication) {
         
 
-        Integer userId = Integer.valueOf(authentication.getName());
+        Integer userId = Integer.valueOf(authentication.getToken().getSubject());
 
         Account account = accountService.createAccount(request, userId);
 
-        return new AccountResponse(account.getName(), account.getType());
+        return new AccountResponse(account.getId(),account.getName(), account.getType());
+    }
+
+   @GetMapping("/api/accounts")
+    public List<AccountResponse> getAllAccounts(JwtAuthenticationToken authentication) {
+
+        Integer userId = Integer.valueOf(authentication.getToken().getSubject());
+
+        List<Account> accounts = accountService.getAllAccounts(userId);
+
+        return accounts.stream()
+            .map(account -> new AccountResponse(
+                    account.getId(),
+                    account.getName(),
+                    account.getType()
+            ))
+            .toList();
     }
 }
 
