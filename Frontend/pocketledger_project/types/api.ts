@@ -4,18 +4,19 @@ export type AccountType =
   | "savings"
   | "credit"
   | "cash";
+export interface UserSettings{ //User preferences, stored as JSON in the database
+  homeCurrency: string;
+}
 export interface User {//Basic user information returned after login
   id: number;
-  name: string;
   email: string;
-  homeCurrency: string;
+  settings: UserSettings;
 }
 export interface LoginRequest {//Data sent when the user logs in
   email: string;
   password: string;
 } 
 export interface RegisterRequest {//Data sent when the user creates an account (currency defaults to USD)
-  name: string;
   email: string;
   password: string;
 }
@@ -26,8 +27,8 @@ export interface AuthResponse {//Returned after login or register
 export interface MeResponse {//Response used when getting or updating the current user
   user: User;
 }
-export interface UpdateMeRequest {//Data sent when the user changes their home currency
-  homeCurrency: string;
+export interface UpdateMeRequest {//Data sent when the user changes their settings
+  settings: UserSettings;
 }
 export interface Category {//A spending category used for transactions and budgets
   id: number;

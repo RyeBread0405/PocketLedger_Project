@@ -9,9 +9,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import edu.okstate.pocketledger.user.InvalidCredentialsException;
+import edu.okstate.pocketledger.user.TooManyAttemptsException;
 
 import java.util.Map;
 
+/*
+ * ApiExceptionHandler.java
+ * Used to convert and display readable errors for all endpoints.
+ */
 
 // converts failed requests into error format from contract
 // applies these handlers to all endpoints (every controller)
@@ -56,5 +61,12 @@ public class ApiExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public Map<String, Object> handleInvalidCredentials(InvalidCredentialsException exception) {
         return error("INVALID_CREDENTIALS", exception.getMessage());
+    }
+
+    // too many failed logins for one eamil in a short window
+    @ExceptionHandler(TooManyAttemptsException.class)
+    @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
+    public Map<String, Object> handleTooManyAttempts(TooManyAttemptsException exception) {
+        return error("TOO_MANY_ATTEMPTS", exception.getMessage());
     }
 }

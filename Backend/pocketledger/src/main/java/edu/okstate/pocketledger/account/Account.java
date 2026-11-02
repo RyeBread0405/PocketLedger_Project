@@ -24,7 +24,7 @@ public class Account{
     @Column(name = "account_id")
     private Long id;
 
-    //User the acocunt belongs to
+    //User the account belongs to
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;

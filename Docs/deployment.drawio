@@ -1,0 +1,69 @@
+<mxfile host="Electron">
+  <diagram name="Page-1" id="LZT1uWcoaCY7SjKmegrR">
+    <mxGraphModel dx="1447" dy="998" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="PaMSzXxvnclFhnkLP2mi-1" parent="1" style="whiteSpace=wrap;html=1;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;Aiven&#39;s Cloud&amp;nbsp;&lt;div&gt;Hosting&lt;/div&gt;" vertex="1">
+          <mxGeometry height="160" width="120" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="qU8OskINlqaxk0iCVZxo-1" parent="1" style="whiteSpace=wrap;html=1;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;MySQL Database" vertex="1">
+          <mxGeometry height="110" width="100" x="10" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="qU8OskINlqaxk0iCVZxo-2" parent="1" style="whiteSpace=wrap;html=1;" value="TBD_DB" vertex="1">
+          <mxGeometry height="60" width="80" x="20" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="qU8OskINlqaxk0iCVZxo-3" parent="1" style="whiteSpace=wrap;html=1;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;Local&amp;nbsp;&lt;span style=&quot;background-color: transparent; color: light-dark(#000000, var(--ge-light-color, #ffffff));&quot;&gt;Device&lt;/span&gt;" vertex="1">
+          <mxGeometry height="340" width="120" x="200" as="geometry" />
+        </mxCell>
+        <mxCell id="QRBXV_pJOgUczCX2-vpp-5" edge="1" parent="1" source="qU8OskINlqaxk0iCVZxo-4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" target="qU8OskINlqaxk0iCVZxo-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="qU8OskINlqaxk0iCVZxo-4" parent="1" style="whiteSpace=wrap;html=1;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;br&gt;&lt;div&gt;Browser&lt;/div&gt;" vertex="1">
+          <mxGeometry height="140" width="100" x="210" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="qU8OskINlqaxk0iCVZxo-6" parent="1" style="whiteSpace=wrap;html=1;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Frontend&lt;/div&gt;" vertex="1">
+          <mxGeometry height="92.5" width="80" x="220" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="qU8OskINlqaxk0iCVZxo-5" parent="1" style="whiteSpace=wrap;html=1;" value="Typescript UI Pages" vertex="1">
+          <mxGeometry height="49.68" width="65" x="227.5" y="30.319999999999993" as="geometry" />
+        </mxCell>
+        <mxCell id="QRBXV_pJOgUczCX2-vpp-6" edge="1" parent="1" source="qU8OskINlqaxk0iCVZxo-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=0;exitDx=0;exitDy=0;entryX=0.75;entryY=1;entryDx=0;entryDy=0;" target="qU8OskINlqaxk0iCVZxo-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="qU8OskINlqaxk0iCVZxo-7" parent="1" style="whiteSpace=wrap;html=1;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;JVM" vertex="1">
+          <mxGeometry height="140" width="100" x="210" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="qU8OskINlqaxk0iCVZxo-8" parent="1" style="whiteSpace=wrap;html=1;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Backend&lt;/div&gt;" vertex="1">
+          <mxGeometry height="92.5" width="80" x="220" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="QRBXV_pJOgUczCX2-vpp-2" parent="1" style="whiteSpace=wrap;html=1;" value="Java source&amp;nbsp;&lt;div&gt;files&lt;/div&gt;" vertex="1">
+          <mxGeometry height="49.68" width="65" x="227.5" y="190.32" as="geometry" />
+        </mxCell>
+        <mxCell id="QRBXV_pJOgUczCX2-vpp-3" edge="1" parent="1" source="PaMSzXxvnclFhnkLP2mi-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=-0.012;entryY=0.704;entryDx=0;entryDy=0;entryPerimeter=0;" target="qU8OskINlqaxk0iCVZxo-3">
+          <mxGeometry relative="1" x="-0.6463" as="geometry" />
+        </mxCell>
+        <mxCell id="QRBXV_pJOgUczCX2-vpp-10" edge="1" parent="1" source="QRBXV_pJOgUczCX2-vpp-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="QRBXV_pJOgUczCX2-vpp-7" parent="1" style="whiteSpace=wrap;html=1;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;ExchangeRate&lt;/div&gt;" vertex="1">
+          <mxGeometry height="160" width="120" x="400" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="QRBXV_pJOgUczCX2-vpp-8" parent="1" style="whiteSpace=wrap;html=1;" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(#000000, var(--ge-light-color, #ffffff));&quot;&gt;ExchangeRate Database&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="100" x="410" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="QRBXV_pJOgUczCX2-vpp-13" edge="1" parent="1" source="QRBXV_pJOgUczCX2-vpp-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="qU8OskINlqaxk0iCVZxo-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QRBXV_pJOgUczCX2-vpp-11" parent="1" style="whiteSpace=wrap;html=1;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Google Hosting&lt;/div&gt;" vertex="1">
+          <mxGeometry height="160" width="120" x="200" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="QRBXV_pJOgUczCX2-vpp-12" parent="1" style="whiteSpace=wrap;html=1;" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(#000000, var(--ge-light-color, #ffffff));&quot;&gt;Gemini&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="110" width="100" x="210" y="390" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

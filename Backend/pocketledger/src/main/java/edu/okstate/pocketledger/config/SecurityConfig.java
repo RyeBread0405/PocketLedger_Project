@@ -18,7 +18,10 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 
-
+/*
+ * SecurityConfig.java
+ * Facilitates password hashing and secure (authorized only) communication
+ */
 
 @Configuration
 public class SecurityConfig{

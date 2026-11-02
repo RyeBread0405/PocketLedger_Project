@@ -5,12 +5,11 @@ import { Wallet } from "lucide-react";
 import { mockRegister } from "../../mocks";
 import {saveToken} from "../../lib/auth";
 const BACKEND_URL = "http://localhost:8080";
-const USE_MOCK = true; //Use mock login for now, change to false when the backend login is ready.
+const USE_MOCK = false; // Register uses the real backend now
 const grainTexture =
   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")"; 
 
-  export default function RegisterPage() {
-  const [name, setName] = useState("");
+export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -32,7 +31,7 @@ const grainTexture =
     }
     if (USE_MOCK) { //student@okstate.edu is already taken in the mock data
       try {
-        const data = await mockRegister({ name, email, password });
+        const data = await mockRegister({ email, password });
         saveToken(data.token);
         window.location.href = "/";
       } catch {
@@ -40,18 +39,27 @@ const grainTexture =
       }
       return;
     }
-    const res = await fetch(`${BACKEND_URL}/api/auth/register`, { //Check this path with the backend team
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-    });
-    if (!res.ok) {
-      setError("Could not create your account. This email may already be registered.");
-      return;
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      if (!res.ok) {
+        const body = await res.json(); //Backend sends { error: { code, message } }
+        if (body.error && body.error.message) {
+          setError(body.error.message);
+        } else {
+          setError("Could not create your account. Please try again.");
+        }
+        return;
+      }
+      const data = await res.json();
+      saveToken(data.token); //Log the user in right after signing up
+      window.location.href = "/";
+    } catch {
+      setError("Could not reach the server. Is the backend running?");
     }
-    const data = await res.json();
-    saveToken(data.token); //Log the user in right after signing up
-    window.location.href = "/";
   }
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-linear-to-b from-[#E4EFE3] via-[#E3EDF1] via-40% to-[#FBF8EF] to-75% px-6 py-12">
@@ -72,17 +80,6 @@ const grainTexture =
             Your home currency starts as USD. You can change it later in Settings.
           </p>
           <form onSubmit={handleRegister} className="mt-8 space-y-4">
-            <div>
-              <label htmlFor="name" className="text-sm text-[#4F6657]">Name</label>
-              <input
-                id="name"
-                type="text"
-                required
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-[#CFE0CF] bg-white px-3 py-2 text-[#3F4A45] focus:outline-none focus:ring-2 focus:ring-[#A9C9B0]"
-              />
-            </div>
             <div>
               <label htmlFor="email" className="text-sm text-[#4F6657]">Email</label>
               <input
