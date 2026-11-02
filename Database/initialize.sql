@@ -5,7 +5,7 @@ DELETE all existing data in the database. Do NOT run it arbitrarily.
 */ 
 
 /*
-To-do list:
+To-do list: UPDATE DOCS <- Several critical changes made
 */
 
 DROP DATABASE IF EXISTS TBD_DB; -- Deletes everything.
@@ -21,7 +21,8 @@ CREATE TABLE user(
     */
 	user_id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
 	email_address VARCHAR(255) NOT NULL UNIQUE,
-    credential VARCHAR(255) NOT NULL
+    credential VARCHAR(255) NOT NULL,
+    settings_json BLOB NOT NULL -- Supports up to 65 KB; can be expanded if needed
 );
   
 CREATE TABLE account (
@@ -33,7 +34,6 @@ CREATE TABLE account (
     account_id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     account_name VARCHAR(255) DEFAULT 'unnamed account',
     account_type ENUM('checking', 'savings', 'credit', 'cash') NOT NULL,
-    settings_json BLOB NOT NULL, -- Supports up to 65 KB; can be expanded if needed
     CONSTRAINT FK_account_user_id
     FOREIGN KEY (user_id) REFERENCES user(user_id)
 );
@@ -61,14 +61,14 @@ CREATE TABLE transaction(
 );
 
 CREATE TABLE budget(
--- Connects accounts with budget_entry
+-- Connects users with budget_entry
 	month DATE,
-    account_id BIGINT UNSIGNED NOT NULL,
+    user_id INT UNSIGNED NOT NULL,
     budget_id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    CONSTRAINT FK_budget_account_id
-    FOREIGN KEY (account_id) REFERENCES account(account_id),
+    CONSTRAINT FK_budget_user_id
+    FOREIGN KEY (user_id) REFERENCES user(user_id),
     CONSTRAINT budget_unique
-    UNIQUE(month, account_id)
+    UNIQUE(month, user_id)
 );
 
 CREATE TABLE budget_entry(
@@ -83,9 +83,8 @@ CREATE TABLE budget_entry(
     FOREIGN KEY (category) REFERENCES category(category_id)
 );
 
-CREATE table FailedAttempt(
+CREATE table failed_attempt(
 	username_entry VARCHAR(255),
-	password_entry VARCHAR(255),
     logtime DATETIME,
     event_id BIGINT AUTO_INCREMENT PRIMARY KEY
 );
@@ -96,7 +95,7 @@ SHOW TABLES; -- Shows that tables exist
 
 
 -- Test stuff; delete later
-INSERT INTO user(email_address, credential)
+/*INSERT INTO user(email_address, credential)
 VALUES ('bob@hotmail.com', 'bobizcool');
 
 SELECT * FROM user; -- Passes
@@ -126,3 +125,4 @@ INSERT INTO budget_entry(budget_id, category, alloted) VALUES
 (2, 2, 0);
 
 SELECT * FROM budget_entry; -- Passes
+*/
