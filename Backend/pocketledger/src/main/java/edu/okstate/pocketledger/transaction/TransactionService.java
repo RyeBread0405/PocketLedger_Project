@@ -8,6 +8,7 @@ import edu.okstate.pocketledger.account.Account;
 import edu.okstate.pocketledger.account.AccountRepository;
 import edu.okstate.pocketledger.category.Category;
 import edu.okstate.pocketledger.category.CategoryRepository;
+import edu.okstate.pocketledger.common.NotFoundException;
 
 @Service
 public class TransactionService{

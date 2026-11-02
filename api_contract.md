@@ -32,7 +32,7 @@ The backend identifies the user from the token. The frontend does not send a `us
   }
 }
 ```
-Common HTTP status codes: `400` - Invalid request, `401` - Not logged in or invalid token, `404` - Resource not found, `409` - Conflict such as an email that is already registered or deleting the `Other` category, `500` - Server error.
+Common HTTP status codes: `400` - Invalid request, `401` - Not logged in or invalid token, `404` - Resource not found, `409` - Conflict such as an email that is already registered or deleting the `Other` category, `429` - Too many requests, such as repeated failed logins, `500` - Server error.
 
 **Authentication endpoints**
 
@@ -77,7 +77,9 @@ Request:
 
 Response: `200 OK` with the same format as register.
 
-Errors: `401` `INVALID_CREDENTIALS` if the email or password is wrong. The message does not say which one was wrong.
+Errors: `401` `INVALID_CREDENTIALS` if the email or password is wrong. The message does not say which one was wrong. `429` `TOO_MANY_ATTEMPTS` if there have been 100 or more failed logins for that email within the last hour. The frontend should show the message from the response so the user knows to wait instead of retrying.
+
+Failed logins are recorded with the email that was typed and the time. The password that was typed is never stored.
 
 **Logout:** There is no logout endpoint. The frontend deletes the token from `localStorage` and sends the user to the login page.
 
@@ -273,6 +275,7 @@ Request:
 Response: `201 Created` and the created account.
 
 **Budgets**
+A budget belongs to a user and a month, not to an account. Transactions from all of the user's accounts count toward it.
 
 **Get Monthly Budget:** `GET /api/budgets?month=2026-09`
 
@@ -458,3 +461,4 @@ Currency conversion is handled by the backend. The backend uses the exchange rat
 4. Rules and AI are only used for CSV imports and `POST /api/ai/categorize`. Manual transactions use the category selected by the user. We have not decided yet how new rules will be created.
 5. `Other` is one of the default categories and cannot be deleted. The frontend should not show a delete button for it. We have not decided the full default category list yet.
 6. All deletes are hard deletes for now, including transactions, categories, and user accounts.
+7. `settings.homeCurrency` is always `USD` for now.

@@ -13,7 +13,7 @@ import jakarta.persistence.Table;
 // one row per failed login
 // lock an account after too many in a row
 @Entity 
-@Table(name = "FailedAttempt")
+@Table(name = "failed_attempt")
 public class FailedAttempt {
     
     @Id 
