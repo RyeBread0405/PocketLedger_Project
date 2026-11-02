@@ -75,7 +75,7 @@ CREATE TABLE budget_entry(
 -- Defines the components of a budget
 	budget_id BIGINT UNSIGNED NOT NULL,
     category INT UNSIGNED NOT NULL,
-    alloted DECIMAL(22, 10) NOT NULL, -- This pessimistically assumes up to a trillion USD with extra precision for currency conversion.
+    allotted DECIMAL(22, 10) NOT NULL, -- This pessimistically assumes up to a trillion USD with extra precision for currency conversion.
     PRIMARY KEY(budget_id, category),
     CONSTRAINT FK_budget_entry_budget_id
     FOREIGN KEY (budget_id) REFERENCES budget(budget_id),
@@ -118,7 +118,7 @@ VALUES ('2026-09-01', 1), ('2026-09-01', 2);
 
 SELECT * FROM budget; -- Passes
 
-INSERT INTO budget_entry(budget_id, category, alloted) VALUES 
+INSERT INTO budget_entry(budget_id, category, allotted) VALUES 
 (1, 1, 50),
 (1, 2, 75),
 (2, 1, 0),
