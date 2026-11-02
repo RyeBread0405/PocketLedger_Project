@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import edu.okstate.pocketledger.user.InvalidCredentialsException;
 import edu.okstate.pocketledger.user.TooManyAttemptsException;
 
+import org.springframework.security.access.AccessDeniedException;
+import edu.okstate.pocketledger.common.NotFoundException;
+
 import java.util.Map;
 
 /*
@@ -52,7 +55,7 @@ public class ApiExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public Map<String, Object> handleConflict(IllegalArgumentException exception) {
-        return error("EMAIL TAKEN", exception.getMessage());
+        return error("EMAIL_TAKEN", exception.getMessage());
     }
 
 
@@ -68,5 +71,21 @@ public class ApiExceptionHandler {
     @ResponseStatus(HttpStatus.TOO_MANY_REQUESTS)
     public Map<String, Object> handleTooManyAttempts(TooManyAttemptsException exception) {
         return error("TOO_MANY_ATTEMPTS", exception.getMessage());
+    }
+
+    // something the request referred to doesn't exist
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, Object>
+    handleNotFound(NotFoundException exception) {
+        return error("NOT_FOUND", exception.getMessage()); 
+    }
+
+    // logged in but the thing belongs to someone else
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public Map<String, Object>
+    handleAccessDenied(AccessDeniedException exception) {
+        return error("FORBIDDEN", "You do not have access to this resource.");
     }
 }

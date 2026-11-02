@@ -1,7 +1,6 @@
 package edu.okstate.pocketledger.user;
 
 import org.springframework.stereotype.Service;
-import org.springframework.cglib.core.Local;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.Duration;
