@@ -1,5 +1,7 @@
 package edu.okstate.pocketledger.user;
 
+import java.nio.charset.StandardCharsets;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -39,6 +41,10 @@ public class User {
     @Column(name = "credential", nullable = false, length = 255)
     private String passwordHash;
 
+    //Settings blob
+    @Column(name = "settings_json", nullable = false, columnDefinition = "BLOB") //Cannot be empty, default to USD
+    private byte[] settingsJson = "{\"currency\":\"USD\"}".getBytes(StandardCharsets.UTF_8);
+
     // jpa needs an empty constructor to build the object before filling it in
     protected User() {
 
@@ -61,5 +67,13 @@ public class User {
 
     public String getPasswordHash() {
         return passwordHash;
+    }
+
+    public String getSettingsJson() {
+        return new String(settingsJson, StandardCharsets.UTF_8);
+    }
+
+    public void setSettingsJson(String settingsJson){
+        this.settingsJson = settingsJson.getBytes(StandardCharsets.UTF_8);
     }
 }
