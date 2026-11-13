@@ -4,6 +4,7 @@ const BACKEND_URL = "http://localhost:8080";
 const USE_MOCK = true; //Use mock login for now, change to false when OAuth is ready
 
 export default function DashboardPage() { 
+   
 
     function handleLogin() { 
     if (USE_MOCK) { //Go straight to the home page while using mock data
@@ -21,28 +22,17 @@ export default function DashboardPage() {
     window.location.href = `${BACKEND_URL}/oauth2/authorization/google`; //Use Google OAuth when the backend login is ready
     } 
 
+
+
     return (
         
             <main className="grid grow grid-flow-col grid-cols-6 grid-rows-6 gap-6 p-8 
-            border-2 border-double border-indigo-300">
+            border-2 border-double border-indigo-300
+            bg-linear-to-b from-[#E4EFE3] via-[#E3EDF1] via-40% to-[#FBF8EF] to-75% px-4 py-8 md:px-10">
+                {/* Background grid */}
+                <div className="pointer-events-none absolute inset-0 opacity-20 [background-image:linear-gradient(#9BB5A3_1px,transparent_1px),linear-gradient(90deg,#9BB5A3_1px,transparent_1px)] [background-size:32px_32px]" />
+
                 
-                {/* Box 1 */}
-                <div className="col-start-2 col-span-4 row-span-1  border-8 border-double border-indigo-300 
-                flex justify-center text-black">
-                    <button
-                        onClick={() =>pageTransition("/login")} 
-                        className="mt-4 mb-4 w-full rounded-lg border border-[#CFE0CF] bg-[#EEF5EC] py-4 font-medium text-[#3F5747] transition hover:-translate-y-0.5 hover:bg-[#E4EFE3] hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A9C9B0]" >
-                        Dashboard Header / Current Return to Login
-                    </button>
-                </div>
-                 <div className="col-start-6 col-span-1 row-span-1  border-8 border-double border-indigo-300 
-                flex justify-center text-black">
-                    <button
-                        onClick={() =>pageTransition("/login")} 
-                        className="mt-8 mb-8 w-full rounded-lg border border-[#CFE0CF] bg-[#EEF5EC] py-4 font-medium text-[#3F5747] transition hover:-translate-y-0.5 hover:bg-[#E4EFE3] hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#A9C9B0]" >
-                        Return to Login
-                    </button>
-                </div>
 
                 {/* Box 2 */}
                 <div className="col-span-2 row-span-4 border-8 border-double border-indigo-300 

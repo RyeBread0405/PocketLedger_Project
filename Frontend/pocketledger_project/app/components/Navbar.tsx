@@ -1,5 +1,7 @@
+"use client";
 import Link from "next/link";
-
+import { useRouter } from "next/navigation";
+import { clearToken } from "../../lib/auth";
 const Pages = {
     dashboard: "/dashboard",
     accounts: "/accounts",
@@ -14,6 +16,13 @@ const Pages = {
 const linkClass = "rounded-lg px-2 py-1 hover:bg-[#EEF5EC]";
 
 export default function Navbar() {
+    const router = useRouter();
+
+    function handleLogout() {
+        clearToken();
+        router.push("/login");
+    }
+
     return (
         <div className="flex flex-col md:flex-row items-center
         gap-4 border-b border-[#EDE6D3] bg-[#FFFDF7] px-4 py-3
@@ -30,7 +39,9 @@ export default function Navbar() {
                 <Link href={Pages.import} className={linkClass}>Import</Link>
                 <Link href={Pages.transactions} className={linkClass}>Transactions</Link>
                 <Link href={Pages.settings} className={linkClass}>Settings</Link>
-                <Link href={Pages.login} className={linkClass}>Login</Link>
+                <button className={linkClass} onClick={handleLogout}>
+                    Logout
+                </button>
             </nav>
         </div>
     );

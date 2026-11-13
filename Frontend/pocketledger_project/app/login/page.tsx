@@ -37,6 +37,10 @@ export default function LoginPage() {
         headers: {"Content-type": "application/json"},
         body: JSON.stringify({email, password}),
       });
+      if (res.status === 429){ //Backend locks the email after too many failed logins
+        setError("Too many failed login attempts. Please try again in 1 hour.");
+        return;
+      }
       if (!res.ok){
         setError ("Email or password is incorrect.");
         return;
