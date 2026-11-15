@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Plus, X } from "lucide-react";
 import {mockTransactions, mockCategories, mockAccounts} from "../../../mocks";
 import {apiFetch, ApiRequestError, checkBackendConnection} from "../../../lib/api";
-import type { Account, AccountType } from "../../../types/api";
+import type { Account, AccountType, Category } from "../../../types/api";
 
 const USE_MOCK = false;
 
@@ -36,6 +36,12 @@ interface BackendAccount {
   name: string;
   type: AccountType;
   currency?: string;
+}
+
+//Category data returned by GET /api/categories
+interface BackendCategory {
+  id: number;
+  categoryLabel: string;
 }
 
 //Change backend transaction data into the format used on this page
@@ -73,10 +79,33 @@ const mockRows: Row[] = mockTransactions.map((t) => ({
   accountId: t.accountId,
 }));
 
-//Categories are still mock: the backend has no GET /api/categories yet.
-//The IDs 1-12 match the default categories in the database. Colors only live in the frontend
-const categories = mockCategories;
-const categoryById = new Map(categories.map((c) => [c.id, c]));
+//The backend does not store colors, so colors only live in the frontend.
+//The default categories (IDs 1-12) use the colors from mocks/categories.ts
+const defaultColors = new Map<number, string>();
+for (const c of mockCategories) {
+  defaultColors.set(c.id, c.color);
+}
+
+//Colors for categories the user creates
+const extraColors = ["#5C7CFA", "#F59F00", "#20C997", "#FA5252", "#7950F2", "#FD7E14", "#12B886", "#E64980"];
+
+//Pick a color for a category
+function colorForCategory(id: number) {
+  const color = defaultColors.get(id);
+  if (color) {
+    return color;
+  }
+  //User categories get a color from the list, based on their ID
+  return extraColors[id % extraColors.length];
+}
+
+//Change backend category data into the format used on this page
+function categoryFromBackend(c: BackendCategory): Category {
+  return { id: c.id, name: c.categoryLabel, color: colorForCategory(c.id) };
+}
+
+//Color used when a category can't be found
+const unknownColor = "#95A5A6";
 
 //Show money with the correct currency symbol
 function formatMoney(amount: number, currency: string) {
@@ -99,6 +128,7 @@ export default function TransactionsPage() {
   const [accounts, setAccounts] = useState<Account[]>(USE_MOCK ? mockAccounts : []);
   const [rows, setRows] = useState<Row[]>(USE_MOCK ? mockRows : []);
   const [accountFilter, setAccountFilter] = useState<number | "all">("all");
+  const [categories, setCategories] = useState<Category[]>(USE_MOCK ? mockCategories : []);
 
   //Store loading, error, and form states
   const [loading, setLoading] = useState(!USE_MOCK);
@@ -112,12 +142,31 @@ export default function TransactionsPage() {
     accountById.set(account.id, account);
   }
 
+  //Find categories by their ID
+  const categoryById = new Map<number, Category>();
+  for (const category of categories) {
+    categoryById.set(category.id, category);
+  }
+
+  //Add a category the user just created to the list
+  function addCategory(category: Category) {
+    setCategories((prev) => [...prev, category]);
+  }
+
   //Load the user's accounts, then the transactions for every account
   useEffect(() => {
     if (USE_MOCK) return;
 
     async function load() {
       try {
+        //Get the default categories and the user's own categories
+        const categoryData = await apiFetch<BackendCategory[]>("/api/categories");
+        const loadedCategories: Category[] = [];
+        for (const category of categoryData) {
+          loadedCategories.push(categoryFromBackend(category));
+        }
+        setCategories(loadedCategories);
+
         //Get the user's accounts from the backend
         const accountData = await apiFetch<BackendAccount[] | { accounts: BackendAccount[] }>("/api/accounts");
 
@@ -268,8 +317,16 @@ export default function TransactionsPage() {
           {!loading && !loadError && visible.length > 0 && (
             <ul className="divide-y divide-[#EDE6D3]">
               {visible.map((r) => {
-                const cat = categoryById.get(r.categoryId);
                 const acct = accountById.get(r.accountId);
+
+                //Find the category name and color for this transaction
+                const cat = categoryById.get(r.categoryId);
+                let categoryName = "Unknown";
+                let categoryColor = unknownColor;
+                if (cat) {
+                  categoryName = cat.name;
+                  categoryColor = cat.color;
+                }
 
                 return (
                   <li key={r.id} className="flex items-center gap-4 px-5 py-3">
@@ -288,10 +345,10 @@ export default function TransactionsPage() {
                     {/* Transaction category */}
                     <span
                       className="hidden shrink-0 items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs sm:inline-flex"
-                      style={{ backgroundColor: (cat?.color ?? "#95A5A6") + "22", color: cat?.color ?? "#95A5A6" }}
+                      style={{ backgroundColor: categoryColor + "22", color: categoryColor }}
                     >
-                      <span className="h-2 w-2 rounded-full" style={{ backgroundColor: cat?.color ?? "#95A5A6" }} />
-                      {cat?.name ?? "Other"}
+                      <span className="h-2 w-2 rounded-full" style={{ backgroundColor: categoryColor }} />
+                      {categoryName}
                     </span>
 
                     {/* Transaction amount, green for income and red for expense */}
@@ -328,6 +385,8 @@ export default function TransactionsPage() {
       {showForm && accounts.length > 0 && (
         <AddTransactionForm
           accounts={accounts}
+          categories={categories}
+          onCategoryCreated={addCategory}
           onClose={() => setShowForm(false)}
           onCreated={(row) => {
             setRows((prev) => [row, ...prev]);
@@ -341,23 +400,85 @@ export default function TransactionsPage() {
 
 //Information the form gets from the page
 interface AddTransactionFormProps {
-  accounts: Account[]; 
-  onClose: () => void; 
+  accounts: Account[];
+  categories: Category[];
+  onCategoryCreated: (category: Category) => void;
+  onClose: () => void;
   onCreated: (row: Row) => void; 
 }
 
 //Form for adding a new transaction
-function AddTransactionForm({ accounts, onClose, onCreated }: AddTransactionFormProps) {
+function AddTransactionForm({ accounts, categories, onCategoryCreated, onClose, onCreated }: AddTransactionFormProps) {
+  //Pick "Other" as the starting category, or the first one if "Other" is missing
+  let startCategoryId = 0;
+  for (const c of categories) {
+    if (c.name === "Other") {
+      startCategoryId = c.id;
+    }
+  }
+  if (startCategoryId === 0 && categories.length > 0) {
+    startCategoryId = categories[0].id;
+  }
+
   //Store the information entered in the form
   const [date, setDate] = useState(today());
   const [kind, setKind] = useState<"expense" | "income">("expense");
   const [amount, setAmount] = useState("");
   const [label, setLabel] = useState("");
   const [description, setDescription] = useState("");
-  const [categoryId, setCategoryId] = useState(categories[categories.length - 1].id); //Default to Other
+  const [categoryId, setCategoryId] = useState(startCategoryId);
   const [accountId, setAccountId] = useState(accounts[0].id);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+
+  //Store the "new category" box
+  const [showNewCategory, setShowNewCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [categoryError, setCategoryError] = useState("");
+  const [creatingCategory, setCreatingCategory] = useState(false);
+
+  //Create a new category and select it
+  async function handleCreateCategory() {
+    setCategoryError("");
+    const name = newCategoryName.trim();
+
+    //Check that the name is not empty
+    if (name === "") {
+      setCategoryError("Enter a category name.");
+      return;
+    }
+
+    //Check that the category does not already exist 
+    for (const c of categories) {
+      if (c.name.toLowerCase() === name.toLowerCase()) {
+        setCategoryError("That category already exists.");
+        return;
+      }
+    }
+
+    //Send the new category to the backend
+    setCreatingCategory(true);
+    try {
+      const created = await apiFetch<BackendCategory>("/api/categories", {
+        method: "POST",
+        body: JSON.stringify({ categoryLabel: name }),
+      });
+      const category = categoryFromBackend(created);
+      onCategoryCreated(category);
+      setCategoryId(category.id); //Select the new category in the dropdown
+      setNewCategoryName("");
+      setShowNewCategory(false);
+    } catch (e) {
+      //Show an error if the category cannot be saved
+      if (e instanceof ApiRequestError) {
+        setCategoryError(e.message);
+      } else {
+        setCategoryError("Could not create the category.");
+      }
+    } finally {
+      setCreatingCategory(false);
+    }
+  }
 
   //Save the transaction when the form is submitted
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
@@ -368,6 +489,12 @@ function AddTransactionForm({ accounts, onClose, onCreated }: AddTransactionForm
     const value = Number(amount);
     if (!Number.isFinite(value) || value <= 0) {
       setError("Enter an amount greater than 0.");
+      return;
+    }
+
+    //Check that a category is selected
+    if (categoryId === 0) {
+      setError("Choose a category.");
       return;
     }
 
@@ -487,7 +614,17 @@ function AddTransactionForm({ accounts, onClose, onCreated }: AddTransactionForm
         {/* Choose category and account */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label htmlFor="category" className="text-sm text-[#4F6657]">Category</label>
+            <div className="flex h-5 items-center justify-between">
+              <label htmlFor="category" className="text-sm text-[#4F6657]">Category</label>
+              {/* Open the box for making a new category */}
+              <button
+                type="button"
+                onClick={() => setShowNewCategory(true)}
+                className="text-xs font-medium text-[#5E8A6B] hover:underline"
+              >
+                + New
+              </button>
+            </div>
             <select
               id="category"
               value={categoryId}
@@ -500,7 +637,9 @@ function AddTransactionForm({ accounts, onClose, onCreated }: AddTransactionForm
             </select>
           </div>
           <div>
-            <label htmlFor="account" className="text-sm text-[#4F6657]">Account</label>
+            <div className="flex h-5 items-center">
+              <label htmlFor="account" className="text-sm text-[#4F6657]">Account</label>
+            </div>
             <select
               id="account"
               value={accountId}
@@ -513,6 +652,50 @@ function AddTransactionForm({ accounts, onClose, onCreated }: AddTransactionForm
             </select>
           </div>
         </div>
+
+        {/* Box for making a new category */}
+        {showNewCategory && (
+          <div className="rounded-lg border border-[#CFE0CF] bg-[#F6FAF5] p-3">
+            <label htmlFor="newCategory" className="text-sm text-[#4F6657]">New category name</label>
+            <div className="mt-1 flex gap-2">
+              <input
+                id="newCategory"
+                maxLength={255}
+                placeholder="e.g. Pets"
+                value={newCategoryName}
+                onChange={(e)=>setNewCategoryName(e.target.value)}
+                onKeyDown={(e) => {
+                  //Pressing Enter here should add the category, not save the transaction
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleCreateCategory();
+                  }
+                }}
+                className="w-full rounded-lg border border-[#CFE0CF] bg-white px-3 py-2 text-[#3F4A45] focus:outline-none focus:ring-2 focus:ring-[#A9C9B0]"
+              />
+              <button
+                type="button"
+                onClick={handleCreateCategory}
+                disabled={creatingCategory}
+                className="shrink-0 rounded-lg border border-[#CFE0CF] bg-[#EEF5EC] px-3 py-2 text-sm font-medium text-[#3F5747] hover:bg-[#E4EFE3] disabled:opacity-60"
+              >
+                Add
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowNewCategory(false);
+                  setNewCategoryName("");
+                  setCategoryError("");
+                }}
+                className="shrink-0 px-1 text-sm text-[#7A8580]"
+              >
+                Cancel
+              </button>
+            </div>
+            {categoryError && <p className="mt-2 text-sm text-[#B5574B]">{categoryError}</p>}
+          </div>
+        )}
 
         {/* Show an error if saving fails */}
         {error && <p className="text-sm text-[#B5574B]">{error}</p>}
