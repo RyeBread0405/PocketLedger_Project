@@ -119,6 +119,33 @@ function today() {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
+//Data returned by GET /api/settings
+interface SettingsResponse {
+  currency: string;
+}
+
+//Data returned by GET /api/fx/rate
+interface FxRateResponse {
+  from: string;
+  to: string;
+  date: string;
+  rate: number | string;
+}
+
+//Exchange rates only exist for past days, so use today for future dates
+function rateDate(date: string) {
+  const now = today();
+  if (date > now) {
+    return now;
+  }
+  return date;
+}
+
+//Key for saving a rate
+function rateKey(currency: string, date: string) {
+  return currency + "|" + rateDate(date);
+}
+
 //Shared style for the form inputs
 const inputClass =
   "mt-1 w-full rounded-lg border border-[#CFE0CF] bg-white px-3 py-2 text-[#3F4A45] focus:outline-none focus:ring-2 focus:ring-[#A9C9B0]";
@@ -129,6 +156,11 @@ export default function TransactionsPage() {
   const [rows, setRows] = useState<Row[]>(USE_MOCK ? mockRows : []);
   const [accountFilter, setAccountFilter] = useState<number | "all">("all");
   const [categories, setCategories] = useState<Category[]>(USE_MOCK ? mockCategories : []);
+
+  //Store the home currency and the exchange rates we already got
+  const [homeCurrency, setHomeCurrency] = useState("USD");
+  const [rates, setRates] = useState<Record<string, number>>({});
+  const [fxError, setFxError] = useState("");
 
   //Store loading, error, and form states
   const [loading, setLoading] = useState(!USE_MOCK);
@@ -152,6 +184,29 @@ export default function TransactionsPage() {
     setCategories((prev) => [...prev, category]);
   }
 
+  //Get the currency of the account a transaction belongs to
+  function currencyOf(row: Row) {
+    const account = accountById.get(row.accountId);
+    if (account) {
+      return account.currency;
+    }
+    return "USD";
+  }
+
+  //Change a transaction amount into the home currency.
+  //Returns null if we don't have the exchange rate yet
+  function toHomeCurrency(row: Row) {
+    const currency = currencyOf(row);
+    if (currency === homeCurrency) {
+      return row.amount;
+    }
+    const rate = rates[rateKey(currency, row.date)];
+    if (rate === undefined) {
+      return null;
+    }
+    return row.amount * rate;
+  }
+
   //Load the user's accounts, then the transactions for every account
   useEffect(() => {
     if (USE_MOCK) return;
@@ -165,6 +220,16 @@ export default function TransactionsPage() {
           loadedCategories.push(categoryFromBackend(category));
         }
         setCategories(loadedCategories);
+
+        //Get the home currency from Settings (keep USD if this fails)
+        try {
+          const settings = await apiFetch<SettingsResponse>("/api/settings");
+          if (settings.currency) {
+            setHomeCurrency(settings.currency);
+          }
+        } catch {
+          //The page still works in USD
+        }
 
         //Get the user's accounts from the backend
         const accountData = await apiFetch<BackendAccount[] | { accounts: BackendAccount[] }>("/api/accounts");
@@ -214,6 +279,67 @@ export default function TransactionsPage() {
     load();
   }, []);
 
+  //Get the exchange rates we still need to show totals in the home currency.
+  //This runs again when transactions are added or the rates change
+  useEffect(() => {
+    if (USE_MOCK || loading || fxError !== "") return;
+
+    //Make a list of the rates we don't have yet
+    const needed: { currency: string; date: string; key: string }[] = [];
+    for (const row of rows) {
+      //Find the currency of this transaction's account
+      let currency = "USD";
+      for (const account of accounts) {
+        if (account.id === row.accountId) {
+          currency = account.currency;
+        }
+      }
+
+      //No rate needed if it is already in the home currency
+      if (currency === homeCurrency) {
+        continue;
+      }
+
+      //Skip rates we already have or already put in the list
+      const key = rateKey(currency, row.date);
+      let alreadyNeeded = false;
+      for (const item of needed) {
+        if (item.key === key) {
+          alreadyNeeded = true;
+        }
+      }
+      if (rates[key] !== undefined || alreadyNeeded) {
+        continue;
+      }
+      needed.push({ currency: currency, date: rateDate(row.date), key: key });
+    }
+
+    if (needed.length === 0) return;
+
+    //Ask the backend for each rate, one at a time
+    async function loadRates() {
+      const newRates: Record<string, number> = {};
+      try {
+        for (const item of needed) {
+          const data = await apiFetch<FxRateResponse>(
+            `/api/fx/rate?from=${item.currency}&to=${homeCurrency}&date=${item.date}`
+          );
+          newRates[item.key] = Number(data.rate);
+        }
+      } catch (e) {
+        //503 when the exchange rate service is down
+        if (e instanceof ApiRequestError) {
+          setFxError(e.message);
+        } else {
+          setFxError("Exchange rates are currently unavailable.");
+        }
+      }
+      //Save the rates we got
+      setRates((prev) => ({ ...prev, ...newRates }));
+    }
+    loadRates();
+  }, [rows, accounts, homeCurrency, rates, loading, fxError]);
+
   //Filter transactions by account and show the newest ones first
   const visible = useMemo(
     () =>
@@ -223,17 +349,43 @@ export default function TransactionsPage() {
     [rows, accountFilter]
   );
 
-  //Calculate total income and spending
-  const totals = useMemo(() => {
-    let income = 0;
-    let expense = 0;
-
-    for (const r of visible) {
-      if (r.amount >= 0) income += r.amount;
-      else expense += r.amount;
+  //Calculate total income and spending in the home currency
+  let income = 0;
+  let expense = 0;
+  let missingRate = false;
+  for (const r of visible) {
+    const amount = toHomeCurrency(r);
+    if (amount === null) {
+      missingRate = true;
+    } else if (amount >= 0) {
+      income += amount;
+    } else {
+      expense += amount;
     }
-    return { income, expense };
-  }, [visible]);
+  }
+
+  //If exchange rates failed, add up the original amounts and show them in USD
+  let totalsCurrency = homeCurrency;
+  if (fxError !== "") {
+    income = 0;
+    expense = 0;
+    for (const r of visible) {
+      if (r.amount >= 0) {
+        income += r.amount;
+      } else {
+        expense += r.amount;
+      }
+    }
+    totalsCurrency = "USD";
+  }
+
+  //Text shown in the total cards
+  let incomeText = formatMoney(income, totalsCurrency);
+  let expenseText = formatMoney(expense, totalsCurrency);
+  if (missingRate && fxError === "") {
+    incomeText = "Converting…";
+    expenseText = "Converting…";
+  }
 
   //Loading is done with no error, but the user has no accounts yet
   let noAccounts = false;
@@ -285,13 +437,25 @@ export default function TransactionsPage() {
         <div className="mt-6 grid grid-cols-2 gap-4">
           <div className="rounded-xl border border-white/70 bg-white/60 p-4">
             <p className="text-sm text-[#7A8580]">Income</p>
-            <p className="mt-1 text-xl font-semibold text-[#3E8E5A]">{formatMoney(totals.income, "USD")}</p>
+            <p className="mt-1 text-xl font-semibold text-[#3E8E5A]">{incomeText}</p>
           </div>
           <div className="rounded-xl border border-white/70 bg-white/60 p-4">
             <p className="text-sm text-[#7A8580]">Spending</p>
-            <p className="mt-1 text-xl font-semibold text-[#B5574B]">{formatMoney(totals.expense, "USD")}</p>
+            <p className="mt-1 text-xl font-semibold text-[#B5574B]">{expenseText}</p>
           </div>
         </div>
+
+        {/* Tell the user which currency the totals are in */}
+        {fxError === "" && homeCurrency !== "USD" && (
+          <p className="mt-2 text-xs text-[#7A8580]">
+            Totals are shown in {homeCurrency}, using the exchange rate from each transaction&apos;s date.
+          </p>
+        )}
+        {fxError !== "" && (
+          <p className="mt-2 text-xs text-[#B5574B]">
+            {fxError} Totals are shown in USD.
+          </p>
+        )}
 
         {/* Transaction list */}
         <div className="mt-6 overflow-hidden rounded-2xl border border-[#EDE6D3] bg-[#FFFDF7] shadow-sm">
@@ -327,6 +491,13 @@ export default function TransactionsPage() {
                   categoryColor = cat.color;
                 }
 
+                //Amount in the home currency, only if it is a different currency
+                let convertedText = "";
+                const converted = toHomeCurrency(r);
+                if (currencyOf(r) !== homeCurrency && converted !== null) {
+                  convertedText = "≈ " + formatMoney(converted, homeCurrency);
+                }
+
                 return (
                   <li key={r.id} className="flex items-center gap-4 px-5 py-3">
                     {/* Transaction date */}
@@ -351,14 +522,20 @@ export default function TransactionsPage() {
                     </span>
 
                     {/* Transaction amount, green for income and red for expense */}
-                    <span
-                      className={`w-28 shrink-0 text-right font-medium tabular-nums ${
-                        r.amount >= 0 ? "text-[#3E8E5A]" : "text-[#B5574B]"
-                      }`}
-                    >
-                      {r.amount >= 0 ? "+" : ""}
-                      {formatMoney(r.amount, acct?.currency ?? "USD")}
-                    </span>
+                    <div className="w-28 shrink-0 text-right">
+                      <span
+                        className={`font-medium tabular-nums ${
+                          r.amount >= 0 ? "text-[#3E8E5A]" : "text-[#B5574B]"
+                        }`}
+                      >
+                        {r.amount >= 0 ? "+" : ""}
+                        {formatMoney(r.amount, acct?.currency ?? "USD")}
+                      </span>
+                      {/* Also show the amount in the home currency if it is different */}
+                      {convertedText !== "" && (
+                        <p className="text-xs tabular-nums text-[#7A8580]">{convertedText}</p>
+                      )}
+                    </div>
                   </li>
                 );
               })}
