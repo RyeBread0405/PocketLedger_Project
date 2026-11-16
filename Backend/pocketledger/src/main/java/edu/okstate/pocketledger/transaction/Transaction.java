@@ -100,4 +100,9 @@ public class Transaction{
     public Account getAccount(){
         return account;
     }
+
+    // for re-categorizing an existing transaction
+    public void setCategory(Category category) {
+        this.category = category;
+    }
 }
