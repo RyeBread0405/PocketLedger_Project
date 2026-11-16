@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import edu.okstate.pocketledger.user.InvalidCredentialsException;
 import edu.okstate.pocketledger.user.TooManyAttemptsException;
+import edu.okstate.pocketledger.fx.FxUnavailableException;
 
 import org.springframework.security.access.AccessDeniedException;
 import edu.okstate.pocketledger.common.NotFoundException;
 
 import java.util.Map;
+import java.time.format.DateTimeParseException;
 
 /*
  * ApiExceptionHandler.java
@@ -87,5 +89,22 @@ public class ApiExceptionHandler {
     public Map<String, Object>
     handleAccessDenied(AccessDeniedException exception) {
         return error("FORBIDDEN", "You do not have access to this resource.");
+    }
+
+    // outside rate provider didn't answer
+    // 503, not 500 because our side is fine
+    @ExceptionHandler(FxUnavailableException.class)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    public Map<String, Object>
+    handleFxUnavailable(FxUnavailableException exception) {
+        return error("FX_UNAVAILABLE", exception.getMessage());
+    }
+
+    // a month query paramerter that isn't in YYYY-MM format
+    @ExceptionHandler(DateTimeParseException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, Object>
+    handleBadDate(DateTimeParseException exception) {
+        return error("VALIDATION_ERROR", "date must look like 2026-09-10");
     }
 }
