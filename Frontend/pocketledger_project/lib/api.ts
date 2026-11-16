@@ -97,31 +97,3 @@ export async function apiFetch<T = unknown>(path: string, options: ApiOptions = 
   //Return the data if the request was successful
   return data as T;
 }
-
-//Test the backend connection and check if the token works
-export async function checkBackendConnection(): Promise<string> {
-  //Check if there is a token before sending the request
-  const hadToken = !!getToken();
-
-  try {
-    //Send a test request without redirecting on 401
-    await apiFetch("/api/transactions?accountId=1", { redirectOn401: false });
-    if (!hadToken) return "Warning: 200 without a token. This endpoint is not protected.";
-    //200 means the token worked. current TransactionService only returns this for the account's owner
-    return "200: token accepted, and the backend returned account 1's transactions.";
-  } catch (e) {
-    //Check what kind of error happened
-    if (!(e instanceof ApiRequestError)) return "Unexpected error.";
-    if (e.status === 0) return "Backend not reachable.";
-    if (e.status === 401) {
-      return hadToken
-        ? "401: backend rejected the token. Token was cleared."
-        : "401 without a token: endpoint is protected.";
-    }
-
-    //Check if the request was sent with a token
-    if (!hadToken) return `Warning: ${e.status} without a token. This endpoint may not be protected.`;
-    if (e.status === 403) return "403: token accepted, but account 1 belongs to another user.";
-    return `${e.status} ${e.code}: token accepted (got past authentication). ${e.message}`;
-  }
-}
