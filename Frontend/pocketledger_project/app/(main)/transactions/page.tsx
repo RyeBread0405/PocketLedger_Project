@@ -3,7 +3,7 @@ import {useEffect, useMemo, useState} from "react";
 import Link from "next/link";
 import { Plus, X } from "lucide-react";
 import {mockTransactions, mockCategories, mockAccounts} from "../../../mocks";
-import {apiFetch, ApiRequestError, checkBackendConnection} from "../../../lib/api";
+import {apiFetch, ApiRequestError} from "../../../lib/api";
 import type { Account, AccountType, Category } from "../../../types/api";
 
 const USE_MOCK = false;
@@ -87,7 +87,7 @@ for (const c of mockCategories) {
 }
 
 //Colors for categories the user creates
-const extraColors = ["#5C7CFA", "#F59F00", "#20C997", "#FA5252", "#7950F2", "#FD7E14", "#12B886", "#E64980"];
+const extraColors = ["#1E3A8A", "#A0401A", "#1E6B3A", "#6B2D5C", "#8C6D1F", "#0B5D63", "#8B1E3F", "#7A8B1F"];
 
 //Pick a color for a category
 function colorForCategory(id: number) {
@@ -134,7 +134,6 @@ export default function TransactionsPage() {
   const [loading, setLoading] = useState(!USE_MOCK);
   const [loadError, setLoadError] = useState("");
   const [showForm, setShowForm] = useState(false);
-  const [backendStatus, setBackendStatus] = useState("");
 
   //Find accounts by their ID
   const accountById = new Map<number, Account>();
@@ -366,19 +365,6 @@ export default function TransactionsPage() {
             </ul>
           )}
         </div>
-
-        {/* Test backend connection, only show during development */}
-        {process.env.NODE_ENV === "development" && (
-          <div className="mt-6 flex flex-wrap items-center gap-3 text-xs text-[#7A8580]">
-            <button
-              onClick={async () => setBackendStatus(await checkBackendConnection())}
-              className="rounded-md border border-[#CFE0CF] bg-white px-2 py-1"
-            >
-              Test backend connection
-            </button>
-            {backendStatus && <span>{backendStatus}</span>}
-          </div>
-        )}
       </div>
 
       {/* Show the form when Add transaction is clicked */}
