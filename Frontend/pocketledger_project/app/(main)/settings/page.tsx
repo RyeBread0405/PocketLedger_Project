@@ -149,7 +149,7 @@ export default function SettingsPage() {
 
           {/* Explain what this setting does right now */}
           <p className="mt-4 text-xs text-[#9AA39E]">
-            Right now this is only saved to your profile. Amounts are not converted to other currencies yet.
+            Totals on the Transactions page are converted to this currency using the exchange rate from each transaction&apos;s date.
           </p>
         </div>
 
