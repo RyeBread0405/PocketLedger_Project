@@ -41,6 +41,13 @@ export default function RegisterPage() {
       setError("Password must be 72 characters or less.");
       return;
     }
+    //Backend needs at least one letter (a-z or A-Z) and one number (0-9)
+    const hasLetter = /[A-Za-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    if (!hasLetter || !hasNumber) {
+      setError("Password must contain at least one letter and one number.");
+      return;
+    }
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
@@ -118,7 +125,7 @@ export default function RegisterPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="mt-1 w-full rounded-lg border border-[#CFE0CF] bg-white px-3 py-2 text-[#3F4A45] focus:outline-none focus:ring-2 focus:ring-[#A9C9B0]"
               />
-              <p className="mt-1 text-xs text-[#9AA39E]">At least 8 characters.</p>
+              <p className="mt-1 text-xs text-[#9AA39E]">At least 8 characters, with a letter and a number.</p>
             </div>
             <div>
               <label htmlFor="confirmPassword" className="text-sm text-[#4F6657]">Confirm password</label>
