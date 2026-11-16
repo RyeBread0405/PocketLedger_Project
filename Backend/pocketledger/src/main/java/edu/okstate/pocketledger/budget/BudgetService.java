@@ -148,4 +148,8 @@ public class BudgetService {
 
             return new BudgetResponse(month, totalPlanned, totalSpent, categories);
         }
+
+        public List<LocalDate> getBudgetMonths(Integer userId){
+            return budgetRepository.findByUser_Id(userId).stream().map(Budget::getMonth).toList();
+        }
     }
