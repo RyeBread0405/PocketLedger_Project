@@ -83,4 +83,17 @@ public class TransactionService{
         //Save the transaction to the database
         return transactionRepository.save(transaction);
     }
+
+    // Delete transaction if belonging to the logged in user
+    public void deleteTransaction(Long transactionId, Integer userId) {
+        Transaction transaction = transactionRepository.findById(transactionId).orElseThrow(() -> new NotFoundException("Transaction not found"));
+
+        // a transaction is yours if its account is rule
+        if (!transaction.getAccount().getUser().getId().equals(userId)) {
+            throw new org.springframework.security.access.AccessDeniedException("User does not have access to this transaction");
+        }
+
+        // Hard delete
+        transactionRepository.delete(transaction);
+    }
 }

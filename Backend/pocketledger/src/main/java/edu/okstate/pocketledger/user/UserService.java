@@ -11,8 +11,7 @@ import java.util.Optional;
 @Service
 public class UserService{
 
-    // TODO: lower MAX_ATTEMPTS for testing, change back to 100 when testing is done
-    private static final int MAX_ATTEMPTS = 4;
+    private static final int MAX_ATTEMPTS = 100;
     private static final Duration WINDOW = Duration.ofHours(1);
 
     private final UserRepository userRepository; //User repository variable

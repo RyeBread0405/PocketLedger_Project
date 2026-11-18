@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import jakarta.validation.Valid;
 
@@ -50,5 +52,13 @@ public class TransactionController {
                 .stream()
                 .map(TransactionResponse::from)
                 .toList();
+    }
+
+    @PostMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id, JwtAuthenticationToken authentication) {
+        Integer userId = Integer.valueOf(authentication.getToken().getSubject());
+
+        transactionService.deleteTransaction(id, userId);
     }
 }
