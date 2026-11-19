@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import jakarta.validation.Valid;
 
@@ -60,5 +61,12 @@ public class TransactionController {
         Integer userId = Integer.valueOf(authentication.getToken().getSubject());
 
         transactionService.deleteTransaction(id, userId);
+    }
+
+    @PutMapping("/{id}")
+    public TransactionResponse update(@PathVariable Long id, @Valid @RequestBody UpdateTransactionRequest request, JwtAuthenticationToken authentication) {
+        Integer userId = Integer.valueOf(authentication.getToken().getSubject());
+
+        return TransactionResponse.from(transactionService.updateTransaction(id, request, userId));
     }
 }

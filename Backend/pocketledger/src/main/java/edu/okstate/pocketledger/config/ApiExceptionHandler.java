@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import edu.okstate.pocketledger.user.InvalidCredentialsException;
 import edu.okstate.pocketledger.user.TooManyAttemptsException;
 import edu.okstate.pocketledger.fx.FxUnavailableException;
+import edu.okstate.pocketledger.account.AccountTransactionsException;
 
 import org.springframework.security.access.AccessDeniedException;
 import edu.okstate.pocketledger.common.NotFoundException;
@@ -106,5 +107,14 @@ public class ApiExceptionHandler {
     public Map<String, Object>
     handleBadDate(DateTimeParseException exception) {
         return error("VALIDATION_ERROR", "date must look like 2026-09-10");
+    }
+
+    // deleting an account that still has transactions without confirming
+    // 409 because it's a conflict with current state
+    @ExceptionHandler(AccountTransactionsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Map<String, Object>
+    handleAccountTransactions(AccountTransactionsException exception) {
+        return error("ACCOUNT_HAS_TRANSACTIONS", exception.getMessage());
     }
 }

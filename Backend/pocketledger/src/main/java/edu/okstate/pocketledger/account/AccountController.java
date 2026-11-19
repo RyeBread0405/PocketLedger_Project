@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.validation.Valid;
 
@@ -55,6 +58,16 @@ public class AccountController {
                     account.getType()
             ))
             .toList();
+    }
+
+    // delete an account
+    // without force, returns 409 if there are transactions so user gets a warning
+    @DeleteMapping("/api/accounts/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id, @RequestParam(defaultValue = "false") boolean force, JwtAuthenticationToken authentication) {
+        Integer userId = Integer.valueOf(authentication.getToken().getSubject());
+
+        accountService.deleteAccount(id, userId, force);
     }
 }
 
