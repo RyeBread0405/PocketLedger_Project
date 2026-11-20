@@ -100,4 +100,18 @@ public class Transaction{
     public Account getAccount(){
         return account;
     }
+
+    // for re-categorizing an existing transaction
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    // used for editing transactions
+    public void update(BigDecimal amount, String label, String description, LocalDate date, Category category) {
+        this.amount = amount;
+        this.label = label;
+        this.description = description;
+        this.date = date;
+        this.category = category;
+    }
 }
