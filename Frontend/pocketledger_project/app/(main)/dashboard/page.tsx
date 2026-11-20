@@ -44,7 +44,7 @@ const sketch: Sketch<DashboardSketchProps> = (p5) => {
 }
 
 const BACKEND_URL = "http://localhost:8080";
-const USE_MOCK = false; //Use mock login for now, change to false when OAuth is ready
+const USE_MOCK = false; 
 
 
 

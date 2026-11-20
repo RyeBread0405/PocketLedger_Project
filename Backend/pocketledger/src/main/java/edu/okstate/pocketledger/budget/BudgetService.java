@@ -77,8 +77,9 @@ public class BudgetService {
         Budget budget = budgetRepository.findByUser_IdAndMonth(userId, firstDay).orElseGet(() -> budgetRepository.save(new Budget(firstDay, user)));
 
 
-        // clear old lines and write new ones
+        // clear old lines and write new ones. Flush deletes before writing to avoid error.
         budgetEntryRepository.deleteAll(budgetEntryRepository.findByBudget_Id(budget.getId()));
+        budgetEntryRepository.flush();
 
         List<BudgetEntry> entries = new ArrayList<>();
 
