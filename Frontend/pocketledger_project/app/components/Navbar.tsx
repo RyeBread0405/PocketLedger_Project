@@ -6,7 +6,7 @@ const Pages = {
     dashboard: "/dashboard",
     accounts: "/accounts",
     budgets: "/budgets",
-    import: "/import",
+    
     transactions: "/transactions",
     settings: "/settings",
     login: "/login",
@@ -36,7 +36,7 @@ export default function Navbar() {
                 <Link href={Pages.dashboard} className={linkClass}>Dashboard</Link>
                 <Link href={Pages.accounts} className={linkClass}>Accounts</Link>
                 <Link href={Pages.budgets} className={linkClass}>Budgets</Link>
-                <Link href={Pages.import} className={linkClass}>Import</Link>
+                
                 <Link href={Pages.transactions} className={linkClass}>Transactions</Link>
                 <Link href={Pages.settings} className={linkClass}>Settings</Link>
                 <button className={linkClass} onClick={handleLogout}>
