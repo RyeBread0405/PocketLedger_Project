@@ -5,6 +5,7 @@ import { Plus, X } from "lucide-react";
 import {mockTransactions, mockCategories, mockAccounts} from "../../../mocks";
 import {apiFetch, ApiRequestError, checkBackendConnection} from "../../../lib/api";
 import type { Account, AccountType } from "../../../types/api";
+import CsvButton from "../../components/csvButton";
 
 const USE_MOCK = false;
 
@@ -209,6 +210,8 @@ export default function TransactionsPage() {
           </div>
 
           <div className="flex items-center gap-3">
+            <CsvButton />
+
             {/* Choose which account to show */}
             <select
               aria-label="Filter by account"
